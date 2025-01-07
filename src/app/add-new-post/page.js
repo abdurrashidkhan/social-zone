@@ -57,6 +57,7 @@ export default function CreateCollegeForm() {
         caption: data.caption,
         date: new Date(),
         image: lgImageUrl,
+        email: user?.email,
         profile: profile
       };
       console.log(insertData)

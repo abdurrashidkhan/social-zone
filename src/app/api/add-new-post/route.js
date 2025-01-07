@@ -7,12 +7,14 @@ export async function POST(request) {
     caption,
     date,
     image,
+    email,
     profile
   } = await request.json();
   const data = {
     caption,
     date,
     image,
+    email,
     profile
   };
   await connectMongodb();

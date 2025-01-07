@@ -1,6 +1,6 @@
-export default async function findOne(category, id) {
-  // console.log(category, id);
-  const res = await fetch(`/api/find-one/${category}/${id}`, {
+export default async function findOne(email) {
+  console.log(email);
+  const res = await fetch(`/api/find-one/${email}/`, {
     cache: "no-store",
   });
   return res.json();

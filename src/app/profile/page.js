@@ -1,23 +1,53 @@
 "use client";
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
+import findAllPost from "@/database/find/findAllPost/findAllPost";
 import Image from 'next/image';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { CiCirclePlus } from "react-icons/ci";
 import { FiUser } from "react-icons/fi";
-
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import Swal from "sweetalert2";
-
-
 
 export default function ProfilePage() {
   const pathname = usePathname();
   const [user, loading, error] = useAuthState(auth);
   // console.log(user);
   const [signOut, outLoading, OutError] = useSignOut(auth);
+  // data load
+  const [allContent, setAllContent] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  // console.log(allContent)
+  const contentLoad = async (email) => {
+    try {
+      setLoading(true);
+      const { allPost } = await findAllPost(email);
+
+      // Ensure allPost is an array, or default to an empty array
+      if (allPost) {
+        setAllContent(allPost);
+      } else {
+        console.warn(" empty .");
+        setAllContent([]);
+      }
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      setAllContent([]); // Set to empty array in case of an error
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    contentLoad(user?.email);
+  }, [user]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
   const userLogOut = async () => {
     await signOut();
     Swal.fire({
@@ -67,18 +97,24 @@ export default function ProfilePage() {
               className="  w-[100%] h-auto avatar "
             >
               <div className="  mx-auto ring-primary ring-offset-base-100 w-24 rounded-full ring ring-offset-2">
-                {user?.photoURL != null ? (
-                  <Image
-                    alt="user profile photo"
-                    width={30}
-                    height={30}
-                    src={user?.photoURL}
-                  />
-                ) : (
-                  <div className=" text-center">
-                    <FiUser className="text-[5rem] h-auto mx-auto" />
-                  </div>
-                )}
+                {
+                  allContent.map((p) => (
+                    <div key={p?._id}>
+                      {p?.profile ? (
+                        <Image
+                          alt="user profile photo"
+                          width={30}
+                          height={30}
+                          src={p?.image}
+                          quality={100}
+                        />
+                      ) : (
+                        <div className="text-center">
+                          <FiUser className="text-[5rem] h-auto mx-auto" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
@@ -92,7 +128,7 @@ export default function ProfilePage() {
             {/* Stats */}
             <div className="flex space-x-6 mt-4">
               <div>
-                <span className="font-bold">4</span> posts
+                <span className="font-bold">{allContent?.length}</span> posts
               </div>
               <div>
                 <span className="font-bold">53</span> followers
@@ -117,7 +153,6 @@ export default function ProfilePage() {
                   src={user?.photoURL}
                   className="w-[80px] h-auto mx-auto rounded-full"
                 />
-
               }
             </div>
           </div>
@@ -131,35 +166,23 @@ export default function ProfilePage() {
         <h3 className="text-lg font-semibold mb-4">Posts</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {/* Post 1 */}
-          <div className="relative w-full aspect-square bg-gray-200 overflow-hidden">
-            <Image
-              src="/post1.jpg"
-              alt="Post 1"
-              layout="fill"
-              objectFit="cover"
-              className="hover:scale-110 transition-transform"
-            />
-          </div>
-          {/* Post 2 */}
-          <div className="relative w-full aspect-square bg-gray-200 overflow-hidden">
-            <Image
-              src="/post2.jpg"
-              alt="Post 2"
-              layout="fill"
-              objectFit="cover"
-              className="hover:scale-110 transition-transform"
-            />
-          </div>
-          {/* Post 3 */}
-          <div className="relative w-full aspect-square bg-gray-200 overflow-hidden">
-            <Image
-              src="/post3.jpg"
-              alt="Post 3"
-              layout="fill"
-              objectFit="cover"
-              className="hover:scale-110 transition-transform"
-            />
-          </div>
+          {
+            allContent.map((p) => (
+              <div key={p?._id}>
+                <div className="relative w-full aspect-square bg-gray-200 overflow-hidden">
+                  <Link href={`/post/dates/${p?._id}`}>
+                    <Image
+                      src={p?.image}
+                      alt={'loading'}
+                      layout="fill"
+                      objectFit="cover"
+                      className="hover:scale-110 transition-transform"
+                    />
+                  </Link>
+                </div>
+              </div>
+            ))}
+
         </div>
       </div>
     </div>
