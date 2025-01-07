@@ -1,107 +1,129 @@
 "use client";
+
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
-import LoginWithAll from "@/components/authentication/LoginWithAll/LoginWithAll";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import {
-  useAuthState,
-  useSignInWithEmailAndPassword,
-} from "react-firebase-hooks/auth";
+import { useAuthState, useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
-export default function Login() {
-  const [cUser, cLoading, xError] = useAuthState(auth);
-  const [signInWithEmailAndPassword, user, loading, error] =
-    useSignInWithEmailAndPassword(auth);
+
+export default function LoginPage() {
+  const [cUser, cLoading, cError] = useAuthState(auth);
+  const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth);
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
+
   const onSubmit = async (data) => {
-    await signInWithEmailAndPassword(data.userEmail, data.password);
+    try {
+      await signInWithEmailAndPassword(data.userEmail, data.password);
+    } catch (err) {
+      console.error("Login error:", err);
+    }
   };
+
   useEffect(() => {
     if (user || cUser) {
       router.push("/");
       Swal.fire({
-        title: "Login success",
+        title: "Login successful!",
         icon: "success",
       });
     }
   }, [user, router, cUser]);
 
   if (loading || cLoading) {
-    return <Loading></Loading>;
+    return <Loading />;
   }
-  if (error || xError) {
-    console.log(error || xError);
+
+  if (error || cError) {
+    console.error(error || cError);
   }
+
   return (
-    <section className="text-[#000]">
-      <div className="container mx-auto px-2 relative h-[100vh]">
-        <div className="login_content_center w-[400px]  h-auto bg-[#fff]  p-3 rounded shadow-2xl ">
-          <div className="text-center pt-6 pb-4">
-            <h1 className="text-2xl font-medium">Login</h1>
-            <h2 className="text-slate-800 pt-2">
-              {" "}
-              Start watching today. Cancel any time.
-            </h2>
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 text-black dark:text-white">
+      {/* Main Container */}
+      <div className="bg-white dark:bg-gray-800 border border-gray-300 p-6 w-full max-w-sm rounded-md shadow-lg">
+        {/* Instagram Logo */}
+        <h1 className="text-center text-3xl font-logo mb-6">Instagram</h1>
+
+        {/* Login Form */}
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+          {/* Email Field */}
+          <div>
+            <input
+              type="email"
+              id="userEmail"
+              placeholder="Phone number, username, or email"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              {...register("userEmail", { required: "Email is required" })}
+            />
+            {errors.userEmail && (
+              <p className="text-red-500 text-sm mt-1">{errors.userEmail.message}</p>
+            )}
           </div>
-          <form className="" onSubmit={handleSubmit(onSubmit)}>
-            <div className="my-2">
-              <label htmlFor="userEmail" className="block">
-                Email address
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <input
-                  type="email"
-                  name="userEmail"
-                  id="userEmail"
-                  placeholder="enter your password"
-                  className="w-full px-2 border border-[#bbbbbb]  py-2 drop-shadow-2xl rounded bg-transparent dark:border-[#2f415a] outline-none focus:outline-none"
-                  {...register("userEmail", { required: true })}
-                />
-              </div>
-            </div>
-            <div className="my-4">
-              <label htmlFor="password" className="block">
-                Password
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="Password"
-                  className="w-full px-2 border border-[#bbbbbb]  py-2 drop-shadow-2xl rounded bg-transparent dark:border-[#2f415a] outline-none focus:outline-none"
-                  {...register("password", { required: true })}
-                />
-              </div>
-            </div>
-            {/* <input placeholder="Enter your Password"  {...register("userPassword", { pattern: /^[A-Za-z]+$/i })} /> */}
-            <div className="">
-              <input
-                className="w-full my-4 bg-indigo-700 px-6 p-1 text-[#FFF] rounded shadow-2xl"
-                type="submit"
-              />
-            </div>
-          </form>
-          <Link
-            exact="true"
-            className="text-blue-500 dark:text-blue-200 py-2 block "
-            href="/authentication/create-account"
+
+          {/* Password Field */}
+          <div>
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              {...register("password", { required: "Password is required" })}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+            )}
+          </div>
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all"
           >
-            Create a new account ?
-          </Link>
-          {/* login and sign up all */}
-          <LoginWithAll />
+            Log in
+          </button>
+        </form>
+
+        {/* Divider */}
+        <div className="flex items-center my-4">
+          <div className="flex-grow h-px bg-gray-300"></div>
+          <span className="text-gray-400 text-sm px-2">OR</span>
+          <div className="flex-grow h-px bg-gray-300"></div>
+        </div>
+
+        {/* Login with Facebook */}
+        <div className="text-center">
+          <button
+            type="button"
+            className="text-blue-800 font-semibold hover:underline"
+          >
+            Log in with Facebook
+          </button>
+          <p className="text-sm text-blue-600 mt-3 cursor-pointer hover:underline">
+            Forgot password?
+          </p>
         </div>
       </div>
-    </section>
+
+      {/* Sign-up Section */}
+      <div className="mt-6 text-center">
+        <p className="text-sm">
+          Don&#39;t have an account?{" "}
+          <a
+            href="/authentication/create-account"
+            className="text-blue-500 font-semibold hover:underline"
+          >
+            Sign up
+          </a>
+        </p>
+      </div>
+    </div>
   );
 }
