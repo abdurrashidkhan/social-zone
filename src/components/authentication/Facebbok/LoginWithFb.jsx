@@ -1,9 +1,7 @@
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
 import userInfoInsert from "@/database/userInfoInsert/userInfoInsert";
-import Image from "next/image";
 import { useSignInWithFacebook } from "react-firebase-hooks/auth";
-import facebookLogo from "../../../images/fbLogo.png";
 export default function LoginWithFb() {
   const [signInWithFacebook, user, loading, error] =
     useSignInWithFacebook(auth);
@@ -32,16 +30,19 @@ export default function LoginWithFb() {
 
   return (
     // <button onClick={() => fbLogin()}>
-    <button onClick={() => fbLogin()}>
-      <Image
-        className="mx-auto w-[30px] h-auto"
-        loading="lazy"
-        // placeholder="blur"
-        src={facebookLogo}
-        width={"100%"}
-        height={"auto"}
-        alt="Loading...."
-      />
+    <button onClick={() => fbLogin()} className="">
+      <div className="text-center ">
+        {/* <Image
+          className="mx-auto w-[30px] h-auto"
+          loading="lazy"
+          // placeholder="blur"
+          src={facebookLogo}
+          width={"100%"}
+          height={"auto"}
+          alt="Loading...."
+        /> */}
+        <h2>Log in with Facebook</h2>
+      </div>
     </button>
   );
 }

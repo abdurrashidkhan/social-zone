@@ -1,11 +1,13 @@
 "use client";
 
 import { auth } from "@/app/firebase.init";
+import LoginWithFb from "@/components/authentication/Facebbok/LoginWithFb";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuthState, useCreateUserWithEmailAndPassword, useUpdateProfile } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
+import { FaFacebook } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
 export default function SignUpPage() {
@@ -80,9 +82,13 @@ export default function SignUpPage() {
             </p>
 
             {/* Facebook Login Placeholder */}
-            <button className="w-full bg-blue-500 text-white py-2 rounded-md font-semibold mb-4 hover:bg-blue-600 transition-all">
+            {/* <button className="w-full bg-blue-500 text-white py-2 rounded-md font-semibold mb-4 hover:bg-blue-600 transition-all">
               Log in with Facebook
-            </button>
+            </button> */}
+            <div className="w-full bg-blue-500 text-white py-2 rounded-md font-medium mb-4 hover:bg-blue-600 transition-all text-center flex items-start justify-center gap-5">
+              <FaFacebook className="text-2xl text-[#fff]" />
+              <LoginWithFb />
+            </div>
 
             {/* Divider */}
             <div className="flex items-center my-4">
@@ -150,7 +156,7 @@ export default function SignUpPage() {
             <div className="mt-6 text-center">
               <p className="text-sm">
                 Have an account?{" "}
-                <Link href="/authentication/login" className="text-blue-500 font-semibold hover:underline">
+                <Link href="/authentication/login" className="text-blue-500 font-medium hover:underline">
                   Log in
                 </Link>
               </p>

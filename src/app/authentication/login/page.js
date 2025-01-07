@@ -2,10 +2,12 @@
 
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
+import LoginWithFb from "@/components/authentication/Facebbok/LoginWithFb";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuthState, useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
+import { FaFacebook } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
 export default function LoginPage() {
@@ -99,7 +101,11 @@ export default function LoginPage() {
         </div>
 
         {/* Login with Facebook */}
-        <div className="text-center">
+        <div className="text-[#0095F6] font-semibold hover:underline text-center flex items-start justify-center gap-5  ">
+          <FaFacebook className="text-2xl text-[#0095F6]" />
+          <LoginWithFb />
+        </div>
+        {/* <div className="text-center">
           <button
             type="button"
             className="text-blue-800 font-semibold hover:underline"
@@ -109,7 +115,7 @@ export default function LoginPage() {
           <p className="text-sm text-blue-600 mt-3 cursor-pointer hover:underline">
             Forgot password?
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* Sign-up Section */}
@@ -118,7 +124,7 @@ export default function LoginPage() {
           Don&#39;t have an account?{" "}
           <a
             href="/authentication/create-account"
-            className="text-blue-500 font-semibold hover:underline"
+            className="text-blue-500 font-medium hover:underline"
           >
             Sign up
           </a>
