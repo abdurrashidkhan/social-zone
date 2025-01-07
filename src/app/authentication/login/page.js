@@ -1,50 +1,82 @@
 "use client";
-
+import Error from "@/app/error";
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
 import LoginWithFb from "@/components/authentication/Facebbok/LoginWithFb";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAuthState, useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import {
+  useAuthState,
+  useCreateUserWithEmailAndPassword,
+  useUpdateProfile,
+} from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
 import { FaFacebook } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
-export default function LoginPage() {
-  const [cUser, cLoading, cError] = useAuthState(auth);
-  const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth);
+export default function SinUp() {
   const router = useRouter();
+  const [cUser, cLoading, cError] = useAuthState(auth);
+  const [createUserWithEmailAndPassword, user, loading, error] =
+    useCreateUserWithEmailAndPassword(auth);
+  const [updateProfile] = useUpdateProfile(auth);
 
   const {
     register,
     handleSubmit,
+    reset,
+    watch,
     formState: { errors },
   } = useForm();
+  const onSubmit = async (e) => {
+    await createUserWithEmailAndPassword(e.userEmail, e.password);
+    await updateProfile({ displayName: e.userName });
+    const userInfo = {
+      displayName: e?.userName,
+      userNumber: e?.userNumber,
+      email: e?.userEmail,
+      password: e?.password,
+      emailVerified: user?.emailVerified || false,
+      photoURL: user?.photoURL || null,
+      accessToken: user?.accessToken || null,
+    };
+    // console.log(userInfo)
+    if (e.userEmail) {
+      try {
+        // C:\projects\digital-marketing-agency\src\app\api\merge-marketing\v1\users\insert-user\[email].js
+        const res = await fetch(`/api/users/create-account/`, {
+          method: "PUT",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(userInfo),
+        });
+        // }
+        if (!res.ok) {
+          throw new Error("Failed to insert user info");
+        } else {
+          reset();
+        }
 
-  const onSubmit = async (data) => {
-    try {
-      await signInWithEmailAndPassword(data.userEmail, data.password);
-    } catch (err) {
-      console.error("Login error:", err);
+        return res.json();
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
-
   useEffect(() => {
     if (user || cUser) {
       router.push("/");
       Swal.fire({
-        title: "Login successful!",
+        title: "Login success",
         icon: "success",
       });
     }
   }, [user, router, cUser]);
 
   if (loading || cLoading) {
-    return <Loading />;
+    return <Loading></Loading>;
   }
-
   if (error || cError) {
-    console.error(error || cError);
+    return console.log(error.message);
   }
 
   return (
