@@ -1,50 +1,46 @@
 "use client";
-
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
+import LoginWithFb from "@/components/authentication/Facebbok/LoginWithFb";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAuthState, useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import {
+  useAuthState,
+  useSignInWithEmailAndPassword,
+} from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
+import { FaFacebook } from "react-icons/fa6";
 import Swal from "sweetalert2";
-
-export default function LoginPage() {
-  const [cUser, cLoading, cError] = useAuthState(auth);
-  const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth);
+export default function Login() {
+  const [cUser, cLoading, xError] = useAuthState(auth);
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
   const router = useRouter();
-
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
-
   const onSubmit = async (data) => {
-    try {
-      await signInWithEmailAndPassword(data.userEmail, data.password);
-    } catch (err) {
-      console.error("Login error:", err);
-    }
+    await signInWithEmailAndPassword(data.userEmail, data.password);
   };
-
   useEffect(() => {
     if (user || cUser) {
       router.push("/");
       Swal.fire({
-        title: "Login successful!",
+        title: "Login success",
         icon: "success",
       });
     }
   }, [user, router, cUser]);
 
   if (loading || cLoading) {
-    return <Loading />;
+    return <Loading></Loading>;
   }
-
-  if (error || cError) {
-    console.error(error || cError);
+  if (error || xError) {
+    console.log(error || xError);
   }
-
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 text-black dark:text-white">
       {/* Main Container */}
@@ -99,7 +95,11 @@ export default function LoginPage() {
         </div>
 
         {/* Login with Facebook */}
-        <div className="text-center">
+        <div className="text-[#0095F6] font-semibold hover:underline text-center flex items-start justify-center gap-5  ">
+          <FaFacebook className="text-2xl text-[#0095F6]" />
+          <LoginWithFb />
+        </div>
+        {/* <div className="text-center">
           <button
             type="button"
             className="text-blue-800 font-semibold hover:underline"
@@ -109,7 +109,7 @@ export default function LoginPage() {
           <p className="text-sm text-blue-600 mt-3 cursor-pointer hover:underline">
             Forgot password?
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* Sign-up Section */}
@@ -118,7 +118,7 @@ export default function LoginPage() {
           Don&#39;t have an account?{" "}
           <a
             href="/authentication/create-account"
-            className="text-blue-500 font-semibold hover:underline"
+            className="text-blue-500 font-medium hover:underline"
           >
             Sign up
           </a>

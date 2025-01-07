@@ -1,70 +1,87 @@
 "use client";
-
+import Error from "@/app/error";
 import { auth } from "@/app/firebase.init";
+import Loading from "@/app/loading";
+import LoginWithFb from "@/components/authentication/Facebbok/LoginWithFb";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAuthState, useCreateUserWithEmailAndPassword, useUpdateProfile } from "react-firebase-hooks/auth";
+import {
+  useAuthState,
+  useCreateUserWithEmailAndPassword,
+  useUpdateProfile,
+} from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
+import { FaFacebook } from "react-icons/fa6";
 import Swal from "sweetalert2";
 
-export default function SignUpPage() {
+export default function SinUp() {
   const router = useRouter();
   const [cUser, cLoading, cError] = useAuthState(auth);
-  const [createUserWithEmailAndPassword, user, loading, error] = useCreateUserWithEmailAndPassword(auth);
+  const [createUserWithEmailAndPassword, user, loading, error] =
+    useCreateUserWithEmailAndPassword(auth);
   const [updateProfile] = useUpdateProfile(auth);
-
+  // const { IsLoading, setLoading } = useState(false)
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm();
+  const onSubmit = async (e) => {
+    // setLoading(true)
+    await createUserWithEmailAndPassword(e?.userEmail, e?.password);
+    await updateProfile({ displayName: e?.userName });
+    const userInfo = {
+      displayName: e?.userName,
+      userNumber: e?.userNumber || false,
+      email: e?.userEmail,
+      password: e?.password || null,
+      emailVerified: user?.emailVerified || false,
+      photoURL: user?.photoURL || null,
+      accessToken: user?.accessToken || null,
+    };
+    // console.log(userInfo)
+    if (e.userEmail) {
+      try {
+        // C:\projects\digital-marketing-agency\src\app\api\merge-marketing\v1\users\insert-user\[email].js
+        const res = await fetch(`/api/users/create-account/`, {
+          method: "PUT",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(userInfo),
+        });
 
-  const onSubmit = async (data) => {
-    const { userName, userEmail, password, userNumber } = data;
+        // }
+        if (!res.ok) {
+          throw new Error("Failed to insert user info");
+        } else {
+          reset();
+          // setLoading(false)
+        }
 
-    try {
-      await createUserWithEmailAndPassword(userEmail, password);
-      await updateProfile({ displayName: userName });
-
-      const userInfo = {
-        displayName: userName,
-        email: userEmail,
-        userNumber,
-        password,
-        emailVerified: user?.emailVerified || false,
-        photoURL: user?.photoURL || null,
-      };
-
-      const res = await fetch(`/api/users/create-account/`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userInfo),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to insert user info");
+        return res.json();
+      } catch (error) {
+        console.log(error);
       }
-
-      reset();
-      Swal.fire({ title: "Account created successfully!", icon: "success" });
-    } catch (err) {
-      Swal.fire({ title: "Error", text: err.message, icon: "error" });
     }
   };
-
   useEffect(() => {
     if (user || cUser) {
       router.push("/");
-      Swal.fire({ title: "Logged in successfully!", icon: "success" });
+      Swal.fire({
+        title: "Login success",
+        icon: "success",
+      });
     }
-  }, [user, cUser, router]);
+  }, [user, router, cUser]);
 
   if (loading || cLoading) {
-    return <p>Loading...</p>;
+    return <Loading></Loading>;
   }
-
+  if (error || cError) {
+    return console.log(error.message);
+  }
   return (
     <section>
       <div className="container mx-auto bg-gray-50 px-2">
@@ -80,9 +97,13 @@ export default function SignUpPage() {
             </p>
 
             {/* Facebook Login Placeholder */}
-            <button className="w-full bg-blue-500 text-white py-2 rounded-md font-semibold mb-4 hover:bg-blue-600 transition-all">
+            {/* <button className="w-full bg-blue-500 text-white py-2 rounded-md font-semibold mb-4 hover:bg-blue-600 transition-all">
               Log in with Facebook
-            </button>
+            </button> */}
+            <div className="w-full bg-blue-500 text-white py-2 rounded-md font-medium mb-4 hover:bg-blue-600 transition-all text-center flex items-start justify-center gap-5">
+              <FaFacebook className="text-2xl text-[#fff]" />
+              <LoginWithFb />
+            </div>
 
             {/* Divider */}
             <div className="flex items-center my-4">
@@ -112,7 +133,7 @@ export default function SignUpPage() {
               <input
                 type="email"
                 {...register("userEmail", { required: "Email is required" })}
-                placeholder="Mobile Number or Email"
+                placeholder="Email address"
                 className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
               {errors.userEmail && <p className="text-red-500 text-sm">{errors.userEmail.message}</p>}
@@ -150,7 +171,7 @@ export default function SignUpPage() {
             <div className="mt-6 text-center">
               <p className="text-sm">
                 Have an account?{" "}
-                <Link href="/authentication/login" className="text-blue-500 font-semibold hover:underline">
+                <Link href="/authentication/login" className="text-blue-500 font-medium hover:underline">
                   Log in
                 </Link>
               </p>
