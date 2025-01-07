@@ -1,7 +1,44 @@
 // pages/index.js
+"use client";
+import { auth } from "@/app/firebase.init";
+import Loading from "@/app/loading";
 import Image from "next/image";
+import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
+import { FiUser } from "react-icons/fi";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import Swal from "sweetalert2";
 export default function MainContent() {
+  const pathname = usePathname();
+  const [user, loading, error] = useAuthState(auth);
+  // console.log(user);
+  const [signOut, outLoading, OutError] = useSignOut(auth);
+  const userLogOut = async () => {
+    await signOut();
+    Swal.fire({
+      title: "Logout success",
+      icon: "success",
+    });
+  };
+
+  if (error || OutError) {
+    return (
+      <div>
+        <p>Error: {error.message}</p>
+      </div>
+    );
+  }
+  if (loading || outLoading) {
+    return <Loading></Loading>;
+  }
+  if (error) {
+    console.log(error.message);
+  }
+  if (loading) {
+    return <Loading></Loading>;
+  }
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Top Navigation */}
@@ -13,31 +50,28 @@ export default function MainContent() {
             placeholder="Search"
             className="bg-gray-200 rounded-lg px-4 py-1 text-sm focus:outline-none focus:ring focus:ring-blue-300"
           />
-          <div className="flex space-x-2">
-            <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-              <Image
-                src="/icons/home.svg"
-                alt="Home Icon"
-                width={20}
-                height={20}
-              />
-            </button>
-            <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-              <Image
-                src="/icons/explore.svg"
-                alt="Explore Icon"
-                width={20}
-                height={20}
-              />
-            </button>
-            <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-              <Image
-                src="/icons/notifications.svg"
-                alt="Notifications Icon"
-                width={20}
-                height={20}
-              />
-            </button>
+          <div className="flex space-x-2 ">
+            <div className="avatar ">
+              <div className="border rounded-full pt-2 px-[10px]  mx-auto hover:bg-[#ebe7e7] ease-in-out duration-500">
+                <IoMdNotificationsOutline className="text-[25px] text-center" />
+              </div>
+            </div>
+            <Link href={"/profile"} className="avatar online">
+              <div className="border rounded-full px-2 py-1 mx-auto hover:bg-[#ebe7e7] ease-in-out duration-500">
+                {user?.photoURL != null ? (
+                  <Image
+                    alt="user profile photo"
+                    width={30}
+                    height={30}
+                    src={user?.photoURL}
+                  />
+                ) : (
+                  <div className="text-[30px] text-center">
+                    <FiUser />
+                  </div>
+                )}
+              </div>
+            </Link>
           </div>
         </div>
       </nav>

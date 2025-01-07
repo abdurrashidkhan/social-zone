@@ -1,5 +1,4 @@
 "use client";
-import Error from "@/app/error";
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
 import LoginWithFb from "@/components/authentication/Facebbok/LoginWithFb";
@@ -7,60 +6,24 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import {
   useAuthState,
-  useCreateUserWithEmailAndPassword,
-  useUpdateProfile,
+  useSignInWithEmailAndPassword,
 } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
 import { FaFacebook } from "react-icons/fa6";
 import Swal from "sweetalert2";
-
-export default function SinUp() {
+export default function Login() {
+  const [cUser, cLoading, xError] = useAuthState(auth);
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
   const router = useRouter();
-  const [cUser, cLoading, cError] = useAuthState(auth);
-  const [createUserWithEmailAndPassword, user, loading, error] =
-    useCreateUserWithEmailAndPassword(auth);
-  const [updateProfile] = useUpdateProfile(auth);
-
   const {
     register,
     handleSubmit,
-    reset,
     watch,
     formState: { errors },
   } = useForm();
-  const onSubmit = async (e) => {
-    await createUserWithEmailAndPassword(e.userEmail, e.password);
-    await updateProfile({ displayName: e.userName });
-    const userInfo = {
-      displayName: e?.userName,
-      userNumber: e?.userNumber,
-      email: e?.userEmail,
-      password: e?.password,
-      emailVerified: user?.emailVerified || false,
-      photoURL: user?.photoURL || null,
-      accessToken: user?.accessToken || null,
-    };
-    // console.log(userInfo)
-    if (e.userEmail) {
-      try {
-        // C:\projects\digital-marketing-agency\src\app\api\merge-marketing\v1\users\insert-user\[email].js
-        const res = await fetch(`/api/users/create-account/`, {
-          method: "PUT",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(userInfo),
-        });
-        // }
-        if (!res.ok) {
-          throw new Error("Failed to insert user info");
-        } else {
-          reset();
-        }
-
-        return res.json();
-      } catch (error) {
-        console.log(error);
-      }
-    }
+  const onSubmit = async (data) => {
+    await signInWithEmailAndPassword(data.userEmail, data.password);
   };
   useEffect(() => {
     if (user || cUser) {
@@ -75,10 +38,9 @@ export default function SinUp() {
   if (loading || cLoading) {
     return <Loading></Loading>;
   }
-  if (error || cError) {
-    return console.log(error.message);
+  if (error || xError) {
+    console.log(error || xError);
   }
-
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 text-black dark:text-white">
       {/* Main Container */}
