@@ -1,0 +1,7 @@
+#ourGallery {
+  transform: translate();
+  -webkit-transform: translate();
+  -moz-transform: translate();
+  -ms-transform: translate();
+  -o-transform: translate();
+}
