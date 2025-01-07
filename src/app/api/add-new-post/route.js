@@ -1,28 +1,22 @@
 import connectMongodb from "@/lib/mongodb";
-import collages from "@/models/collagesSchema";
+import post from "@/models/newPostSchema";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
   const {
-    collageName,
-    collageEstablished,
-    description,
-    address,
-    educationalField,
+    caption,
     date,
     image,
+    profile
   } = await request.json();
   const data = {
-    collageName,
-    collageEstablished,
-    description,
-    address,
-    educationalField,
+    caption,
     date,
     image,
+    profile
   };
   await connectMongodb();
-  await collages.create(data);
+  await post.create(data);
   return NextResponse.json({
     message: "data upload success",
     status: true,
@@ -31,7 +25,7 @@ export async function POST(request) {
 }
 export async function GET(request) {
   await connectMongodb();
-  const allCollage = await collages.find({}).catch();
+  const allPost = await post.find({}).catch();
   // console.log(allUser)
-  return NextResponse.json({ allCollage });
+  return NextResponse.json({ allPost });
 }
