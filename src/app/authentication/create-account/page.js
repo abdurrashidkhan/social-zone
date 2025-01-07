@@ -1,173 +1,165 @@
 "use client";
-import Error from "@/app/error";
+
 import { auth } from "@/app/firebase.init";
-import Loading from "@/app/loading";
-import LoginWithAll from "@/components/authentication/LoginWithAll/LoginWithAll";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import {
-  useAuthState,
-  useCreateUserWithEmailAndPassword,
-  useUpdateProfile,
-} from "react-firebase-hooks/auth";
+import { useAuthState, useCreateUserWithEmailAndPassword, useUpdateProfile } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 
-export default function SinUp() {
+export default function SignUpPage() {
   const router = useRouter();
   const [cUser, cLoading, cError] = useAuthState(auth);
-  const [createUserWithEmailAndPassword, user, loading, error] =
-    useCreateUserWithEmailAndPassword(auth);
+  const [createUserWithEmailAndPassword, user, loading, error] = useCreateUserWithEmailAndPassword(auth);
   const [updateProfile] = useUpdateProfile(auth);
 
   const {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm();
-  const onSubmit = async (e) => {
-    await createUserWithEmailAndPassword(e.userEmail, e.password);
-    await updateProfile({ displayName: e.userName });
-    const userInfo = {
-      displayName: e?.userName,
-      userNumber: e?.userNumber,
-      email: e?.userEmail,
-      password: e?.password,
-      emailVerified: user?.emailVerified || false,
-      photoURL: user?.photoURL || null,
-      accessToken: user?.accessToken || null,
-    };
-    // console.log(userInfo)
-    if (e.userEmail) {
-      try {
-        // C:\projects\digital-marketing-agency\src\app\api\merge-marketing\v1\users\insert-user\[email].js
-        const res = await fetch(`/api/users/create-account/`, {
-          method: "PUT",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(userInfo),
-        });
-        // }
-        if (!res.ok) {
-          throw new Error("Failed to insert user info");
-        } else {
-          reset();
-        }
 
-        return res.json();
-      } catch (error) {
-        console.log(error);
+  const onSubmit = async (data) => {
+    const { userName, userEmail, password, userNumber } = data;
+
+    try {
+      await createUserWithEmailAndPassword(userEmail, password);
+      await updateProfile({ displayName: userName });
+
+      const userInfo = {
+        displayName: userName,
+        email: userEmail,
+        userNumber,
+        password,
+        emailVerified: user?.emailVerified || false,
+        photoURL: user?.photoURL || null,
+      };
+
+      const res = await fetch(`/api/users/create-account/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userInfo),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to insert user info");
       }
+
+      reset();
+      Swal.fire({ title: "Account created successfully!", icon: "success" });
+    } catch (err) {
+      Swal.fire({ title: "Error", text: err.message, icon: "error" });
     }
   };
+
   useEffect(() => {
     if (user || cUser) {
       router.push("/");
-      Swal.fire({
-        title: "Login success",
-        icon: "success",
-      });
+      Swal.fire({ title: "Logged in successfully!", icon: "success" });
     }
-  }, [user, router, cUser]);
+  }, [user, cUser, router]);
 
   if (loading || cLoading) {
-    return <Loading></Loading>;
+    return <p>Loading...</p>;
   }
-  if (error || cError) {
-    return console.log(error.message);
-  }
-  return (
-    <section className="text-[#000]">
-      <div className="container mx-auto px-2 relative h-[100vh]">
-        <div className="login_content_center w-[400px]  h-auto bg-[#fff]  p-3 rounded shadow-2xl">
-          <div className="text-center pt-6 pb-4">
-            <h1 className="text-2xl font-medium">Sign up</h1>
-            <h2 className="text-slate-800 pt-2">
-              {" "}
-              Start watching today. Cancel any time.
-            </h2>
-          </div>
-          <form className="" onSubmit={handleSubmit(onSubmit)}>
-            <div className="my-2">
-              <label htmlFor="userName" className="block">
-                Enter Your Name
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <input
-                  type="text"
-                  name="userName"
-                  id="userName"
-                  placeholder="enter your name"
-                  className="w-full px-2 border border-[#bbbbbb]  py-2 drop-shadow-2xl rounded bg-transparent dark:border-[#2f415a] outline-none focus:outline-none"
-                  {...register("userName", { required: true })}
-                />
-              </div>
-            </div>
-            <div className="my-2">
-              <label htmlFor="userNumber" className="block">
-                Enter Mobile Number
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <input
-                  type="number"
-                  name="userNumber"
-                  id="userNumber"
-                  placeholder="enter your number"
-                  className="w-full px-2 border border-[#bbbbbb]  py-2 drop-shadow-2xl rounded bg-transparent dark:border-[#2f415a] outline-none focus:outline-none"
-                  {...register("userNumber", { required: true })}
-                />
-              </div>
-            </div>
-            <div className="my-2">
-              <label htmlFor="userEmail" className="block">
-                Enter Your Email
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <input
-                  type="email"
-                  name="userEmail"
-                  id="userEmail"
-                  placeholder="enter your password"
-                  className="w-full px-2 border border-[#bbbbbb]  py-2 drop-shadow-2xl rounded bg-transparent dark:border-[#2f415a] outline-none focus:outline-none"
-                  {...register("userEmail", { required: true })}
-                />
-              </div>
-            </div>
-            <div className="my-2">
-              <label htmlFor="password" className="block">
-                Password
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="Password"
-                  className="w-full px-2 border border-[#bbbbbb]  py-2 drop-shadow-2xl rounded bg-transparent dark:border-[#2f415a] outline-none focus:outline-none"
-                  {...register("password", { required: true })}
-                />
-              </div>
-            </div>
-            {/* <input placeholder="Enter your Password"  {...register("userPassword", { pattern: /^[A-Za-z]+$/i })} /> */}
-            <div className="">
-              <input
-                className="w-full my-4 bg-indigo-700 px-6 p-1 text-[#FFF] rounded shadow-2xl hover:cursor-pointer"
-                type="submit"
-              />
-            </div>
-          </form>
-          <Link
-            className="dark:text-blue-200 text-blue-500 py-2 block"
-            href="/authentication/login"
-          >
-            I have account ?
-          </Link>
 
-          {/* login and sign up all */}
-          <LoginWithAll />
+  return (
+    <section>
+      <div className="container mx-auto bg-gray-50 px-2">
+        <div className="flex justify-center items-center  min-h-screen">
+          {/* Main Container */}
+          <div className="bg-white border border-gray-300 p-6 w-full max-w-sm rounded-md shadow-sm">
+            {/* Instagram Logo */}
+            <h1 className="text-center text-3xl font-logo mb-4">Instagram</h1>
+
+            {/* Subtitle */}
+            <p className="text-center text-gray-500 text-sm mb-4">
+              Sign up to see photos and videos from your friends.
+            </p>
+
+            {/* Facebook Login Placeholder */}
+            <button className="w-full bg-blue-500 text-white py-2 rounded-md font-semibold mb-4 hover:bg-blue-600 transition-all">
+              Log in with Facebook
+            </button>
+
+            {/* Divider */}
+            <div className="flex items-center my-4">
+              <div className="flex-grow h-px bg-gray-300"></div>
+              <span className="text-gray-400 text-sm px-2">OR</span>
+              <div className="flex-grow h-px bg-gray-300"></div>
+            </div>
+
+            {/* Sign Up Form */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+              <input
+                type="text"
+                {...register("userName", { required: "Name is required" })}
+                placeholder="Full Name"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+              {errors.userName && <p className="text-red-500 text-sm">{errors.userName.message}</p>}
+
+              <input
+                type="number"
+                {...register("userNumber", { required: "Mobile Number is required" })}
+                placeholder="Mobile Number"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+              {errors.userNumber && <p className="text-red-500 text-sm">{errors.userNumber.message}</p>}
+
+              <input
+                type="email"
+                {...register("userEmail", { required: "Email is required" })}
+                placeholder="Mobile Number or Email"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+              {errors.userEmail && <p className="text-red-500 text-sm">{errors.userEmail.message}</p>}
+
+              <input
+                type="password"
+                {...register("password", { required: "Password is required" })}
+                placeholder="Password"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+              {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 rounded-md font-semibold hover:bg-blue-600 transition-all"
+              >
+                Sign up
+              </button>
+            </form>
+
+            {/* Terms and Policies */}
+            <div className="">
+              <p className="text-xs text-gray-500 text-center mt-4">
+                People who use our service may have uploaded your contact information
+                to Instagram. <a href="#" className="text-blue-500 hover:underline">Learn More</a>
+              </p>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                By signing up, you agree to our{" "}
+                <a href="#" className="text-blue-500 hover:underline">Terms</a>,{" "}
+                <a href="#" className="text-blue-500 hover:underline">Privacy Policy</a>, and{" "}
+                <a href="#" className="text-blue-500 hover:underline">Cookies Policy</a>.
+              </p>
+            </div>
+            {/* Footer Section */}
+            <div className="mt-6 text-center">
+              <p className="text-sm">
+                Have an account?{" "}
+                <Link href="/authentication/login" className="text-blue-500 font-semibold hover:underline">
+                  Log in
+                </Link>
+              </p>
+            </div>
+          </div>
+
+
         </div>
+
       </div>
     </section>
   );
