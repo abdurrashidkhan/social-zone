@@ -1,7 +1,7 @@
 "use client";
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
-import insertAdmissionInfo from "@/database/insert/insertAdmissionInfo";
+import insertAdmissionInfo from "@/database/insert/countReact";
 import { useState } from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
