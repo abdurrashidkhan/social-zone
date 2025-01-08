@@ -3,6 +3,7 @@ import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
 import CheckingUser from "@/components/Admin/checkingUser";
 import insertNewPost from "@/database/insert/insertNewPost";
+import insertProfilePicture from "@/database/insert/insertProfilePicture";
 import Link from "next/link";
 import { useState } from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
@@ -26,7 +27,7 @@ export default function CreateCollegeForm() {
   } = useForm();
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
+    setIsLoading(true); // Set loading to true when form is submitted
 
     try {
       const formData = new FormData();
@@ -54,20 +55,26 @@ export default function CreateCollegeForm() {
       }
 
       const insertData = {
-        caption: data.caption,
-        date: new Date(),
-        image: lgImageUrl,
-        email: user?.email,
-        profile: profile
+        photoURL: lgImageUrl,
       };
-      console.log(insertData)
-      await insertNewPost(insertData, setIsLoading, reset);
+
+      console.log(insertData);
+
+      // Pass setIsLoading correctly to both functions
+      if (profile) {
+        // Ensure both functions receive setIsLoading and reset as arguments
+        // await insertNewPost(user?.email, insertData, setIsLoading, reset);
+        await insertProfilePicture(user?.email, insertData, setIsLoading, reset);
+      } else {
+        await insertNewPost(insertData, setIsLoading, reset);
+      }
     } catch (error) {
       console.error("Error uploading files:", error);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Stop loading when done
     }
   };
+
 
   const onFileChange = (event) => {
     const selectedFile = event.target.files[0];
