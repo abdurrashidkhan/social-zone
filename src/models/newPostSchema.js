@@ -7,6 +7,7 @@ const newPost = new Schema(
     photoURL: { type: String, require: true },
     email: { type: String, require: true },
     profile: { type: Boolean, require: true },
+    react: { type: Number, require: false },
   },
   {
     timestamps: true,
