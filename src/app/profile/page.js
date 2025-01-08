@@ -25,6 +25,7 @@ export default function ProfilePage() {
       setLoading(true);
       const { allPost } = await findAllPost(email);
 
+
       // Ensure allPost is an array, or default to an empty array
       if (allPost) {
         setAllContent(allPost);
@@ -103,8 +104,8 @@ export default function ProfilePage() {
                       {p?.profile ? (
                         <Image
                           alt="user profile photo"
-                          width={30}
-                          height={30}
+                          width={500}
+                          height={500}
                           src={p?.image}
                           quality={100}
                         />
