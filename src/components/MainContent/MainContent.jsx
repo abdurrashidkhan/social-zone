@@ -9,14 +9,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
+import { CiShare1 } from "react-icons/ci";
+import { FaComment } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa6";
 import { FiUser } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import Swal from "sweetalert2";
-
 const ProfileAvatar = ({ src, alt, size = 30 }) => (
-  <div className="rounded-full border p-2 hover:bg-[#ebe7e7] ease-in-out duration-500">
+  <div className="rounded-full border  bg-[#ebe7e7] ease-in-out duration-500">
     {src ? (
-      <Image alt={alt} src={src} width={size} height={size} />
+      <Image
+        alt={alt}
+        src={src}
+        width={500}
+        height={500}
+        className="object-cover w-full h-auto   rounded-full object-center"
+      />
     ) : (
       <div className="text-[30px] text-center">
         <FiUser />
@@ -148,16 +156,17 @@ export default function MainContent() {
               return (
                 <div
                   key={post?._id}
-                  className="mt-4 w-[70%] mx-auto bg-[#fff] rounded-lg overflow-hidden shadow-2xl"
+                  className="mt-4 w-full sm:w-[70%] mx-auto bg-[#fff] rounded-lg overflow-hidden shadow-2xl"
                 >
                   {/* User Info */}
                   <div className="flex items-center px-4 py-2 border-b border-gray-200">
-                    <div className="h-10 w-10 bg-gray-500 rounded-full flex items-center justify-center">
+                    <div className="h-10 w-10   rounded-full flex items-center justify-center">
                       {/* User Avatar */}
                       <ProfileAvatar
                         src={users?.photoURL}
                         alt={users?.displayName || "User"}
-                        size={40}
+                        className="w-full h-auto"
+                        // size={40}
                       />
                     </div>
                     <div className="ml-3">
@@ -193,9 +202,16 @@ export default function MainContent() {
                     {/* Interaction Buttons */}
                     <div className="flex justify-between items-center mt-3">
                       <div className="flex items-center space-x-4">
-                        <button className="text-slate-800 text-xl">❤️</button>
-                        <button className="text-slate-800 text-xl">💬</button>
-                        <button className="text-slate-800 text-xl">🔄</button>
+                        <button className="text-slate-800 text-xl">
+                          <FaRegHeart />
+                          {/* <FaHeart /> */}
+                        </button>
+                        <button className="text-slate-800 text-xl">
+                          <FaComment />
+                        </button>
+                        <button className="text-slate-900 text-xl">
+                          <CiShare1 />
+                        </button>
                       </div>
                       <span className="text-gray-400 text-sm">{timeAgo}</span>
                     </div>
