@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
+// Define the schema for a new post
 const newPost = new Schema(
   {
     caption: { type: String, required: true },
@@ -7,15 +8,15 @@ const newPost = new Schema(
     image: { type: String, required: true },
     email: { type: String, required: true },
     react: { type: Number, default: 0 },
-    // reactEmail: [
-    //   {
-    //     email: { type: String, required: true },  // Email of the user
-    //     timestamp: { type: Date, required: true },  // Timestamp of when the reaction happened
-    //   },
-    // ],
+    reactEmail: [
+      {
+        email: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
-    timestamps: true,
+    timestamps: true,  // Automatically adds createdAt and updatedAt fields
   }
 );
 

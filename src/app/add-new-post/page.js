@@ -73,12 +73,12 @@ export default function CreateCollegeForm() {
           date: new Date(),
           email: user?.email,
           react: 0,
-          // reactEmail: [
-          //   {
-          //     email: "",  // Use the actual user's email here
-          //     timestamp: new Date(),  // Timestamp of when the user reacted
-          //   },
-          // ],
+          reactEmail: [
+            {
+              email: user?.email,  // Use the actual user's email here
+              timestamp: new Date(),  // Timestamp of when the user reacted
+            },
+          ],
         };
         await insertNewPost(insertData, setIsLoading, reset);
         console.log(insertData)

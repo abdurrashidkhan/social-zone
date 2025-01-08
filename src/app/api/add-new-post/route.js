@@ -1,45 +1,61 @@
-import connectMongodb from "@/lib/mongodb";
-import post from "@/models/newPostSchema";
+import connectMongodb from "@/lib/mongodb"; // MongoDB connection function
+import post from "@/models/newPostSchema"; // Mongoose model for 'post'
 import { NextResponse } from "next/server";
 
+// POST function to insert data into MongoDB
 export async function POST(request) {
-  const {
-    caption,
-    date,
-    image,
-    email,
-    profile,
-    reactEmail,
-    react,
-  } = await request.json();
+  try {
+    const {
+      caption,
+      date,
+      image,
+      email,
+      reactEmail,
+      react,
+    } = await request.json();  // Destructure the incoming data from the request
 
-  const data = {
-    caption,
-    date,
-    image,
-    email,
-    profile,
-    react,
-    // reactEmail,  // The reactEmail here will be an array
-  };
-  console.log(data)
-  // Connect to MongoDB
-  await connectMongodb();
+    // Validation: Check if the required fields are present
+    if (!caption || !date || !image || !email) {
+      return NextResponse.json({
+        message: "Missing required fields",
+        status: false,
+        statusCode: 400,  // Bad Request
+      });
+    }
 
-  // Create a new post document with the received data
-  await post.create(data);
+    // Ensure `reactEmail` is an array (default empty array if not provided)
+    const validatedReactEmail = Array.isArray(reactEmail) ? reactEmail : [];
 
-  return NextResponse.json({
-    message: "Data upload success",
-    status: true,
-    statusCode: 200,  // Correcting "status" to "statusCode"
-  });
+    const data = {
+      caption,
+      date,
+      image,
+      email,
+      react: react || 0,  // Default to 0 if `react` is not provided
+      reactEmail: validatedReactEmail,  // Use the validated array
+    };
+
+    console.log("Post data: ", data);  // Debugging: log the data being sent to MongoDB
+
+    // Connect to MongoDB
+    await connectMongodb();
+
+    // Create a new post document in MongoDB
+    const createdPost = await post.create(data);
+
+    // Return success response
+    return NextResponse.json({
+      message: "Data upload success",
+      status: true,
+      statusCode: 200,
+      post: createdPost,  // Return the created post
+    });
+  } catch (error) {
+    console.error("Error creating post:", error);
+    return NextResponse.json({
+      message: "Error creating post",
+      status: false,
+      statusCode: 500,  // Internal Server Error
+    });
+  }
 }
-
-export async function GET(request) {
-  await connectMongodb();
-  const allPost = await post.find({}).catch();
-
-  return NextResponse.json({ allPost });
-}
-
