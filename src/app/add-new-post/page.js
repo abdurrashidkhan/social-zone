@@ -54,19 +54,34 @@ export default function CreateCollegeForm() {
         }
       }
 
-      const insertData = {
-        photoURL: lgImageUrl,
-      };
 
-      console.log(insertData);
+
+      // console.log(insertData);
 
       // Pass setIsLoading correctly to both functions
       if (profile) {
+        const insertData = {
+          photoURL: lgImageUrl,
+        };
         // Ensure both functions receive setIsLoading and reset as arguments
         // await insertNewPost(user?.email, insertData, setIsLoading, reset);
         await insertProfilePicture(user?.email, insertData, setIsLoading, reset);
       } else {
+        const insertData = {
+          image: lgImageUrl,
+          caption: data?.caption,
+          date: new Date(),
+          email: user?.email,
+          react: 0,
+          reactEmail: [
+            {
+              email: user?.email,  // Use the actual user's email here
+              timestamp: new Date(),  // Timestamp of when the user reacted
+            },
+          ],
+        };
         await insertNewPost(insertData, setIsLoading, reset);
+        console.log(insertData)
       }
     } catch (error) {
       console.error("Error uploading files:", error);

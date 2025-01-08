@@ -4,6 +4,7 @@ import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
 import findOneUser from "@/database/find/allUsers/findOneUser";
 import findAllPosts from "@/database/find/findAllPosts/findAllPosts";
+import countReact from "@/database/insert/countReact";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,19 +12,21 @@ import { useEffect, useState } from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { CiShare1 } from "react-icons/ci";
 import { FaComment } from "react-icons/fa";
-import { FaRegHeart } from "react-icons/fa6";
+import { FaHeart, FaRegHeart } from "react-icons/fa6";
 import { FiUser } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import Swal from "sweetalert2";
+
+// Profile Avatar component
 const ProfileAvatar = ({ src, alt, size = 30 }) => (
-  <div className="rounded-full border  bg-[#ebe7e7] ease-in-out duration-500">
+  <div className="rounded-full border bg-[#ebe7e7] ease-in-out duration-500">
     {src ? (
       <Image
         alt={alt}
         src={src}
         width={500}
         height={500}
-        className="object-cover w-full h-auto   rounded-full object-center"
+        className="object-cover w-full h-auto rounded-full object-center"
       />
     ) : (
       <div className="text-[30px] text-center">
@@ -36,20 +39,39 @@ const ProfileAvatar = ({ src, alt, size = 30 }) => (
 export default function MainContent() {
   const [user, loading, error] = useAuthState(auth);
   const [signOut, outLoading, outError] = useSignOut(auth);
-
+  const [IsLoading, setIsLoading] = useState(false);
   // Data states
   const [allContent, setAllContent] = useState([]);
   const [userDetails, setUserDetails] = useState({});
-  const [isLoading, setLoading] = useState(false);
+  const [reactCount, setReactCount] = useState(0);
+  // const [postInfo, setPostInfo] = useState("677d15ead9b4354571ed1474");
+
+  // Frontend function to handle the react (like) functionality
+  const reactCounter = async (id, email) => {
+    try {
+      // Fetch react count for the user
+      const response = await countReact(id, email);
+
+      if (response.success) {
+        console.log("Post liked successfully:", response);
+        // You can update the react count or other UI elements as necessary
+        // setReactCount(response.updatedCount); // If you need to update the UI with the new count
+      } else {
+        console.log("Failed to like the post:", response.message);
+      }
+    } catch (error) {
+      console.error("Error in reactCounter:", error);
+    }
+  };
 
   // Fetch posts and user details
-  const contentLoad = async (email) => {
+  const contentLoad = async (id, email) => {
     try {
-      setLoading(true);
+      setIsLoading(true);
 
       // Fetch all posts for the user
       const { allPost } = await findAllPosts(email);
-      setAllContent(allPost || []);
+      setAllContent(allPost || []); // Ensure allPost is an array
 
       // Extract unique emails from posts
       const emails = [...new Set(allPost.map((post) => post.email))];
@@ -69,10 +91,11 @@ export default function MainContent() {
       setUserDetails(userMap);
     } catch (err) {
       console.error("Error fetching data:", err);
-      setAllContent([]);
-      setUserDetails({});
+      setAllContent([]); // Reset content in case of error
+      setUserDetails({}); // Reset user details in case of error
+      setReactCount(0); // Reset react count in case of error
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -82,6 +105,14 @@ export default function MainContent() {
     }
   }, [user?.email]);
 
+  // React for post
+  const [isLiked, setIsLiked] = useState(false);
+
+  const toggleLike = () => {
+    setIsLiked(!isLiked);
+    setReactCount(isLiked ? reactCount - 1 : reactCount + 1);
+  };
+
   const userLogOut = async () => {
     await signOut();
     Swal.fire({
@@ -90,7 +121,7 @@ export default function MainContent() {
     });
   };
 
-  if (loading || outLoading || isLoading) {
+  if (loading || outLoading || IsLoading) {
     return <Loading />;
   }
 
@@ -108,7 +139,7 @@ export default function MainContent() {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Top Navigation */}
-      <nav className="flex items-center justify-between px-4 py-2 border-b bg-stext-slate-800 shadow-sm ">
+      <nav className="flex items-center justify-between px-4 py-2 border-b bg-stext-slate-800 shadow-sm">
         <div className="text-2xl font-bold text-gray-900">Instagram</div>
         <div className="flex items-center space-x-4">
           <input
@@ -116,9 +147,9 @@ export default function MainContent() {
             placeholder="Search"
             className="bg-gray-200 rounded-lg px-4 py-1 text-sm focus:outline-none focus:ring focus:ring-blue-300"
           />
-          <div className="flex space-x-2 ">
+          <div className="flex space-x-2">
             <div className="avatar ">
-              <div className="border rounded-full pt-2 px-[10px]  mx-auto hover:bg-[#ebe7e7] ease-in-out duration-500">
+              <div className="border rounded-full pt-2 px-[10px] mx-auto hover:bg-[#ebe7e7] ease-in-out duration-500">
                 <IoMdNotificationsOutline className="text-[25px] text-center" />
               </div>
             </div>
@@ -160,13 +191,12 @@ export default function MainContent() {
                 >
                   {/* User Info */}
                   <div className="flex items-center px-4 py-2 border-b border-gray-200">
-                    <div className="h-10 w-10   rounded-full flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-full flex items-center justify-center">
                       {/* User Avatar */}
                       <ProfileAvatar
                         src={users?.photoURL}
                         alt={users?.displayName || "User"}
                         className="w-full h-auto"
-                        // size={40}
                       />
                     </div>
                     <div className="ml-3">
@@ -197,14 +227,26 @@ export default function MainContent() {
                       </span>{" "}
                       {post?.caption}
                     </div>
-                    <p className="text-gray-500 text-sm mt-1">5,498 likes</p>
+                    <p className="text-gray-500 text-sm mt-1">
+                      {post?.react} likes
+                    </p>
 
                     {/* Interaction Buttons */}
                     <div className="flex justify-between items-center mt-3">
                       <div className="flex items-center space-x-4">
-                        <button className="text-slate-800 text-xl">
-                          <FaRegHeart />
-                          {/* <FaHeart /> */}
+                        <button
+                          className="text-slate-800 text-xl"
+                          onClick={toggleLike}
+                        >
+                          {isLiked ? (
+                            <FaHeart className="text-red-500" />
+                          ) : (
+                            <FaRegHeart
+                              onClick={() =>
+                                reactCounter(post?._id, user?.email)
+                              }
+                            />
+                          )}
                         </button>
                         <button className="text-slate-800 text-xl">
                           <FaComment />
