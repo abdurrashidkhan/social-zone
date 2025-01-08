@@ -2,13 +2,28 @@
 
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
-import Image from "next/image";
-import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import findOneUser from "@/database/find/allUsers/findOneUser";
 import findAllPosts from "@/database/find/findAllPosts/findAllPosts";
+import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
+import { FiUser } from "react-icons/fi";
+import { IoMdNotificationsOutline } from "react-icons/io";
 import Swal from "sweetalert2";
-import { formatDistanceToNow } from "date-fns"; // Import formatDistanceToNow
+
+const ProfileAvatar = ({ src, alt, size = 30 }) => (
+  <div className="rounded-full border p-2 hover:bg-[#ebe7e7] ease-in-out duration-500">
+    {src ? (
+      <Image alt={alt} src={src} width={size} height={size} />
+    ) : (
+      <div className="text-[30px] text-center">
+        <FiUser />
+      </div>
+    )}
+  </div>
+);
 
 export default function MainContent() {
   const [user, loading, error] = useAuthState(auth);
@@ -70,10 +85,14 @@ export default function MainContent() {
   if (loading || outLoading || isLoading) {
     return <Loading />;
   }
+
+  // Error Handling
   if (error || outError) {
+    const errorMessage =
+      error?.message || outError?.message || "An unknown error occurred";
     return (
-      <div>
-        <p>Error: {error?.message || outError?.message}</p>
+      <div className="p-4 text-red-500">
+        <p>Error: {errorMessage}</p>
       </div>
     );
   }
@@ -81,14 +100,41 @@ export default function MainContent() {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Top Navigation */}
-      <nav className="flex items-center justify-between px-4 py-2 border-b bg-white shadow-sm">
+      <nav className="flex items-center justify-between px-4 py-2 border-b bg-stext-slate-800 shadow-sm ">
         <div className="text-2xl font-bold text-gray-900">Instagram</div>
+        <div className="flex items-center space-x-4">
+          <input
+            type="text"
+            placeholder="Search"
+            className="bg-gray-200 rounded-lg px-4 py-1 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+          />
+          <div className="flex space-x-2 ">
+            <div className="avatar ">
+              <div className="border rounded-full pt-2 px-[10px]  mx-auto hover:bg-[#ebe7e7] ease-in-out duration-500">
+                <IoMdNotificationsOutline className="text-[25px] text-center" />
+              </div>
+            </div>
+            <Link href={"/profile"}>
+              <ProfileAvatar src={user?.photoURL} alt="User Avatar" />
+            </Link>
+          </div>
+        </div>
       </nav>
 
       {/* Main Content */}
       <div className="flex">
+        {/* Left Sidebar */}
+        <aside className="hidden md:block w-1/5 border-r p-4">
+          <ul className="space-y-2">
+            <li className="text-lg font-medium">Home</li>
+            <li className="text-gray-700">Explore</li>
+            <li className="text-gray-700">Messages</li>
+          </ul>
+        </aside>
+
+        {/* Feed */}
         <main className="flex-grow p-4">
-          <div className="bg-white rounded-lg shadow-sm p-4">
+          <div className="bg-stext-slate-800 rounded-lg shadow-sm p-4">
             {/* Post Feed */}
             {allContent.map((post) => {
               const users = userDetails[post.email];
@@ -100,51 +146,92 @@ export default function MainContent() {
               });
 
               return (
-                <div key={post?._id} className="mt-4 w-[70%] mx-auto">
+                <div
+                  key={post?._id}
+                  className="mt-4 w-[70%] mx-auto bg-[#fff] rounded-lg overflow-hidden shadow-2xl"
+                >
                   {/* User Info */}
-                  <div className="flex items-center space-x-4">
-                    <Image
-                      src="/user-avatar.jpg"
-                      alt="User Avatar"
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                    <div>
-                      <p className="font-medium text-gray-800 capitalize">
+                  <div className="flex items-center px-4 py-2 border-b border-gray-200">
+                    <div className="h-10 w-10 bg-gray-500 rounded-full flex items-center justify-center">
+                      {/* User Avatar */}
+                      <ProfileAvatar
+                        src={users?.photoURL}
+                        alt={users?.displayName || "User"}
+                        size={40}
+                      />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-slate-800 font-medium capitalize">
                         {users?.displayName || "Anonymous"}
                       </p>
-                      <p className="text-sm text-gray-500">{timeAgo}</p>{" "}
-                      {/* Time ago */}
+                      <p className="text-gray-400 text-sm">{timeAgo}</p>
                     </div>
+                    <div className="ml-auto text-slate-800 text-lg">⋮</div>
                   </div>
 
                   {/* Post Image */}
-                  <div className="mt-4">
+                  <div className="relative w-full h-[500px]">
                     <Image
                       src={post?.image || "/default.jpg"}
                       alt="Post Image"
-                      width={500}
-                      height={500}
-                      className="w-full rounded-lg"
+                      fill
+                      className="object-cover w-full h-auto rounded"
                     />
                   </div>
 
-                  {/* Post Caption */}
-                  <div className="mt-2">
-                    <p>
+                  {/* Post Footer */}
+                  <div className="px-4 py-3">
+                    {/* Post Caption */}
+                    <div className="text-slate-800">
                       <span className="font-bold capitalize">
                         {users?.displayName || "Anonymous"}
                       </span>{" "}
                       {post?.caption}
-                    </p>
-                    <p className="text-gray-500 text-sm">5,498 likes</p>
+                    </div>
+                    <p className="text-gray-500 text-sm mt-1">5,498 likes</p>
+
+                    {/* Interaction Buttons */}
+                    <div className="flex justify-between items-center mt-3">
+                      <div className="flex items-center space-x-4">
+                        <button className="text-slate-800 text-xl">❤️</button>
+                        <button className="text-slate-800 text-xl">💬</button>
+                        <button className="text-slate-800 text-xl">🔄</button>
+                      </div>
+                      <span className="text-gray-400 text-sm">{timeAgo}</span>
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
         </main>
+
+        {/* Right Sidebar */}
+        <aside className="hidden lg:block w-1/5 border-l p-4">
+          <h3 className="font-bold text-gray-800">Suggestions for you</h3>
+          <ul className="mt-4 space-y-2">
+            {["monalisa11934", "shopnil_ehsan", "sharif_hujaifa"].map(
+              (user, index) => (
+                <li
+                  key={index}
+                  className="flex items-center justify-between text-sm"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Image
+                      src={`/suggestion-avatar-${index + 1}.jpg`}
+                      alt={user}
+                      width={32}
+                      height={32}
+                      className="rounded-full"
+                    />
+                    <p>{user}</p>
+                  </div>
+                  <button className="text-blue-500 font-medium">Follow</button>
+                </li>
+              )
+            )}
+          </ul>
+        </aside>
       </div>
     </div>
   );
