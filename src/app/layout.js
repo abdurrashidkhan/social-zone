@@ -1,9 +1,7 @@
-"use client";
-
+'use client'
 import { Hind_Siliguri, Poppins } from "next/font/google";
 
 import CheckingUser from "@/components/Admin/checkingUser";
-import { usePathname } from "next/navigation";
 import "./globals.css";
 // Import Poppins for English content
 const poppins = Poppins({
@@ -20,16 +18,12 @@ const tiroBangla = Hind_Siliguri({
 
 export default function RootLayout({ children }) {
   const checkingUsers = CheckingUser();
-  const pathname = usePathname();
-  const dbPath = pathname?.slice(0, 10);
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${tiroBangla.className} ${poppins.className}    antialiased bg-[#fff] text-slate-800`}
       >
-        {/* {dbPath === "/dashboard" ? <DbNavbar /> : <Navbar />} */}
         {children}
-        {/* <Footer /> */}
       </body>
     </html>
   );

@@ -1,3 +1,4 @@
+"use client";
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
 import { useRouter } from "next/navigation";
