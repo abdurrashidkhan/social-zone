@@ -1,6 +1,7 @@
 "use client";
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
+import CheckingUser from "@/components/Admin/checkingUser";
 import findAllPost from "@/database/find/findAllPost/findAllPost";
 import Image from 'next/image';
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { FiUser } from "react-icons/fi";
 import Swal from "sweetalert2";
 
 export default function ProfilePage() {
+  const checkingUsers = CheckingUser();
   const pathname = usePathname();
   const [user, loading, error] = useAuthState(auth);
   // console.log(user);
