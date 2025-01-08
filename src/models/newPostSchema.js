@@ -2,16 +2,22 @@ import mongoose, { Schema } from "mongoose";
 
 const newPost = new Schema(
   {
-    caption: { type: String, require: true },
-    date: { type: Date, require: true },
-    photoURL: { type: String, require: true },
-    email: { type: String, require: true },
-    profile: { type: Boolean, require: true },
-    react: { type: Number, require: false },
+    caption: { type: String, required: true },
+    date: { type: Date, required: true },
+    image: { type: String, required: true },
+    email: { type: String, required: true },
+    react: { type: Number, default: 0 },
+    // reactEmail: [
+    //   {
+    //     email: { type: String, required: true },  // Email of the user
+    //     timestamp: { type: Date, required: true },  // Timestamp of when the reaction happened
+    //   },
+    // ],
   },
   {
     timestamps: true,
   }
 );
+
 const post = mongoose.models.post || mongoose.model("post", newPost);
 export default post;

@@ -8,26 +8,38 @@ export async function POST(request) {
     date,
     image,
     email,
-    profile
+    profile,
+    reactEmail,
+    react,
   } = await request.json();
+
   const data = {
     caption,
     date,
     image,
     email,
-    profile
+    profile,
+    react,
+    // reactEmail,  // The reactEmail here will be an array
   };
+  console.log(data)
+  // Connect to MongoDB
   await connectMongodb();
+
+  // Create a new post document with the received data
   await post.create(data);
+
   return NextResponse.json({
-    message: "data upload success",
+    message: "Data upload success",
     status: true,
-    status: 200,
+    statusCode: 200,  // Correcting "status" to "statusCode"
   });
 }
+
 export async function GET(request) {
   await connectMongodb();
   const allPost = await post.find({}).catch();
-  // console.log(allUser)
+
   return NextResponse.json({ allPost });
 }
+

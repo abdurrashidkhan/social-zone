@@ -47,24 +47,23 @@ export default function MainContent() {
   // const [postInfo, setPostInfo] = useState("677d15ead9b4354571ed1474");
 
   // Frontend function to handle the react (like) functionality
-  const reactCounter = async (id, reactCount) => {
-    // setIsLoading(true);
+  const reactCounter = async (id, email) => {
     try {
       // Fetch react count for the user
-      const response = await countReact(id, reactCount, setIsLoading);
+      const response = await countReact(id, email);
 
       if (response.success) {
         console.log("Post liked successfully:", response);
-        // You can update the react count if necessary, e.g. setReactCount(response.updatedCount)
+        // You can update the react count or other UI elements as necessary
+        // setReactCount(response.updatedCount); // If you need to update the UI with the new count
       } else {
         console.log("Failed to like the post:", response.message);
       }
     } catch (error) {
       console.error("Error in reactCounter:", error);
-    } finally {
-      // setIsLoading(false); // Ensure loading state is always turned off
     }
   };
+
   // Fetch posts and user details
   const contentLoad = async (id, email) => {
     try {
@@ -229,7 +228,7 @@ export default function MainContent() {
                       {post?.caption}
                     </div>
                     <p className="text-gray-500 text-sm mt-1">
-                      {reactCount} likes
+                      {post?.react} likes
                     </p>
 
                     {/* Interaction Buttons */}
@@ -244,7 +243,7 @@ export default function MainContent() {
                           ) : (
                             <FaRegHeart
                               onClick={() =>
-                                reactCounter(post?._id, reactCount)
+                                reactCounter(post?._id, user?.email)
                               }
                             />
                           )}
