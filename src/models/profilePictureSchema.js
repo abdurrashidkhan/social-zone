@@ -4,7 +4,7 @@ const newPost = new Schema(
   {
     caption: { type: String, require: true },
     date: { type: Date, require: true },
-    photoURL: { type: String, require: true },
+    image: { type: String, require: true },
     email: { type: String, require: true },
     profile: { type: Boolean, require: true },
   },
