@@ -7,9 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import {
-  useAuthState,
   useCreateUserWithEmailAndPassword,
-  useUpdateProfile,
+  useUpdateProfile
 } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
 import { FaFacebook } from "react-icons/fa6";
@@ -17,7 +16,7 @@ import Swal from "sweetalert2";
 
 export default function SinUp() {
   const router = useRouter();
-  const [cUser, cLoading, cError] = useAuthState(auth);
+  // const [cUser, cLoading, cError] = useAuthState(auth);
   const [createUserWithEmailAndPassword, user, loading, error] =
     useCreateUserWithEmailAndPassword(auth);
   const [updateProfile] = useUpdateProfile(auth);
@@ -67,19 +66,19 @@ export default function SinUp() {
     }
   };
   useEffect(() => {
-    if (user || cUser) {
+    if (user) {
       router.push("/");
       Swal.fire({
         title: "Login success",
         icon: "success",
       });
     }
-  }, [user, router, cUser]);
+  }, [user, router]);
 
-  if (loading || cLoading) {
+  if (loading) {
     return <Loading></Loading>;
   }
-  if (error || cError) {
+  if (error) {
     return console.log(error.message);
   }
   return (
