@@ -2,6 +2,7 @@
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
 import CheckingUser from "@/components/Admin/checkingUser";
+import findOneUser from "@/database/find/allUsers/findOneUser";
 import findAllPost from "@/database/find/findAllPost/findAllPost";
 import Image from 'next/image';
 import Link from "next/link";
@@ -33,16 +34,20 @@ export default function ProfilePage() {
   const checkingUsers = CheckingUser();
   const pathname = usePathname();
   const [user, loading, error] = useAuthState(auth);
+
   // console.log(user);
   const [signOut, outLoading, OutError] = useSignOut(auth);
   // data load
   const [allContent, setAllContent] = useState([]);
+  const [userInfo, setUserInfo] = useState({});
   const [isLoading, setLoading] = useState(false);
-  // console.log(allContent)
+  console.log(userInfo)
   const contentLoad = async (email) => {
     try {
       setLoading(true);
       const { allPost } = await findAllPost(email);
+      const { allUserInfo } = await findOneUser(email);
+      setUserInfo(allUserInfo)
 
 
       // Ensure allPost is an array, or default to an empty array
@@ -117,18 +122,22 @@ export default function ProfilePage() {
               className="  w-[100%] h-auto avatar "
             >
               <div className="  mx-auto ring-primary ring-offset-base-100 w-24 rounded-full ring ring-offset-2">
-                {
-                  allContent.map((p) => (
-                    <div key={p?._id}>
-                      {p?.photoURL ? (
-                        allContent
-                      ) : (
-                        <div className="text-center">
-                          <FiUser className="text-[5rem] h-auto mx-auto" />
-                        </div>
-                      )}
+
+
+                <div>
+                  {userInfo?.photoURL ? (
+                    <ProfileAvatar
+                      src={userInfo?.photoURL}
+                      alt="User Avatar"
+                      className="w-8 h-8 sm:w-10 sm:h-10"
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <FiUser className="text-[5rem] h-auto mx-auto" />
                     </div>
-                  ))}
+                  )}
+                </div>
+
               </div>
             </div>
           </div>

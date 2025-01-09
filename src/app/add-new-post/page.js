@@ -9,6 +9,30 @@ import { useState } from "react";
 import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
 
+import findOneUser from "@/database/find/allUsers/findOneUser";
+import Image from 'next/image';
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { FiUser } from "react-icons/fi";
+import Swal from "sweetalert2";
+// Profile Avatar component
+const ProfileAvatar = ({ src, alt, size = 30 }) => (
+  <div className="rounded-full border bg-[#ebe7e7] ease-in-out duration-500">
+    {src ? (
+      <Image
+        alt={alt}
+        src={src}
+        width={500}
+        height={500}
+        className="object-cover w-10 h-10 rounded-full object-center"
+      />
+    ) : (
+      <div className="text-[30px] text-center object-center">
+        <FiUser className="text-[30px] text-center object-center" />
+      </div>
+    )}
+  </div>
+);
 export default function CreateCollegeForm() {
   const [user, loading, error] = useAuthState(auth);
   const [signOut, outLoading, OutError] = useSignOut(auth);
@@ -17,7 +41,46 @@ export default function CreateCollegeForm() {
   const [files, setFile] = useState(null);
   const [caption, setCaption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  // 
+  const pathname = usePathname();
 
+  // console.log(user);
+  // data load
+  // const [allContent, setAllContent] = useState([]);
+  const [userInfo, setUserInfo] = useState({});
+  console.log(userInfo)
+  const contentLoad = async (email) => {
+    try {
+      setIsLoading(true);
+      // const { allPost } = await findAllPost(email);
+      const { allUserInfo } = await findOneUser(email);
+      setUserInfo(allUserInfo)
+
+
+      // Ensure allPost is an array, or default to an empty array
+
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      setAllContent([]); // Set to empty array in case of an error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    contentLoad(user?.email);
+  }, [user]);
+
+
+  const userLogOut = async () => {
+    await signOut();
+    Swal.fire({
+      title: "Logout success",
+      icon: "success",
+    });
+  };
+  // 
   const {
     register,
     handleSubmit,
@@ -129,7 +192,7 @@ export default function CreateCollegeForm() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-4">
-          <div className=" border rounded-lg flex justify-center items-center bg-gray-100 h-64">
+          <div className="flex-1 border rounded-lg flex justify-center items-center bg-gray-100 h-64">
             <div className="w-full flex flex-col items-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-100">
               {!files ? (
                 <>
@@ -188,10 +251,22 @@ export default function CreateCollegeForm() {
             </div>
           </div>
 
-          <div className="pl-4">
+          <div className="flex-1 pl-4">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-gray-300"></div>
-              <span className="font-medium">abdurrashidkhan.dev</span>
+              <div className="w-10 h-10">
+                {userInfo?.photoURL ? (
+                  <ProfileAvatar
+                    src={userInfo?.photoURL}
+                    alt="User Avatar"
+                    className="w-10 h-10  "
+                  />
+                ) : (
+                  <div className="text-center">
+                    <FiUser className="text-[5rem] h-auto mx-auto" />
+                  </div>
+                )}
+              </div>
+              <span className="font-medium capitalize">{userInfo?.displayName}</span>
             </div>
 
             <textarea
