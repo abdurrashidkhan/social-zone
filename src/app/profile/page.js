@@ -11,7 +11,24 @@ import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
 import { CiCirclePlus } from "react-icons/ci";
 import { FiUser } from "react-icons/fi";
 import Swal from "sweetalert2";
-
+// Profile Avatar component
+const ProfileAvatar = ({ src, alt, size = 30 }) => (
+  <div className="rounded-full border bg-[#ebe7e7] ease-in-out duration-500">
+    {src ? (
+      <Image
+        alt={alt}
+        src={src}
+        width={500}
+        height={500}
+        className="object-cover w-full h-auto rounded-full object-center"
+      />
+    ) : (
+      <div className="text-[30px] text-center">
+        <FiUser />
+      </div>
+    )}
+  </div>
+);
 export default function ProfilePage() {
   const checkingUsers = CheckingUser();
   const pathname = usePathname();
@@ -103,14 +120,8 @@ export default function ProfilePage() {
                 {
                   allContent.map((p) => (
                     <div key={p?._id}>
-                      {p?.profile ? (
-                        <Image
-                          alt="user profile photo"
-                          width={500}
-                          height={500}
-                          src={p?.image}
-                          quality={100}
-                        />
+                      {p?.photoURL ? (
+                        allContent
                       ) : (
                         <div className="text-center">
                           <FiUser className="text-[5rem] h-auto mx-auto" />

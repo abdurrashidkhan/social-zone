@@ -128,8 +128,8 @@ export default function CreateCollegeForm() {
           </button>
         </div>
 
-        <div className="flex mt-4">
-          <div className="flex-1 border rounded-lg flex justify-center items-center bg-gray-100 h-64">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-4">
+          <div className=" border rounded-lg flex justify-center items-center bg-gray-100 h-64">
             <div className="w-full flex flex-col items-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-100">
               {!files ? (
                 <>
@@ -188,7 +188,7 @@ export default function CreateCollegeForm() {
             </div>
           </div>
 
-          <div className="flex-1 pl-4">
+          <div className="pl-4">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-full bg-gray-300"></div>
               <span className="font-medium">abdurrashidkhan.dev</span>
@@ -205,7 +205,7 @@ export default function CreateCollegeForm() {
               })}
               name="caption"
               id="caption"
-              className="mt-4 w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-4 w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               placeholder="Write a caption..."
               rows="4"
             ></textarea>

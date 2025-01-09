@@ -141,20 +141,29 @@ export default function MainContent() {
       {/* Top Navigation */}
       <nav className="flex items-center justify-between px-4 py-2 border-b bg-stext-slate-800 shadow-sm">
         <div className="text-2xl font-bold text-gray-900">Instagram</div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 w-full justify-between sm:space-x-6 md:w-auto">
+          {/* Search Bar - Full Width on Small Screens */}
           <input
             type="text"
             placeholder="Search"
-            className="bg-gray-200 rounded-lg px-4 py-1 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+            className="bg-gray-200 rounded-lg px-4 py-1 text-sm focus:outline-none focus:ring focus:ring-blue-300 w-[50%] sm:w-auto ml-auto"
           />
-          <div className="flex space-x-2">
-            <div className="avatar ">
+
+          <div className="flex space-x-2 items-center">
+            {/* Notification Icon */}
+            <div className="avatar">
               <div className="border rounded-full pt-2 px-[10px] mx-auto hover:bg-[#ebe7e7] ease-in-out duration-500">
                 <IoMdNotificationsOutline className="text-[25px] text-center" />
               </div>
             </div>
-            <Link href={"/profile"}>
-              <ProfileAvatar src={user?.photoURL} alt="User Avatar" />
+
+            {/* Profile Avatar */}
+            <Link href="/profile">
+              <ProfileAvatar
+                src={user?.photoURL}
+                alt="User Avatar"
+                className="w-8 h-8 sm:w-10 sm:h-10"
+              />
             </Link>
           </div>
         </div>
