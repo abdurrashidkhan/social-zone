@@ -42,9 +42,9 @@ export default function Login() {
     console.log(error || xError);
   }
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 text-black dark:text-white">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50  text-black">
       {/* Main Container */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-300 p-6 w-full max-w-sm rounded-md shadow-lg">
+      <div className="bg-white  border border-gray-300 p-6 w-full max-w-sm rounded-md shadow-lg">
         {/* Social Zone Logo */}
         <h1 className="text-center text-3xl font-logo mb-6">Social Zone</h1>
 
@@ -56,7 +56,7 @@ export default function Login() {
               type="email"
               id="userEmail"
               placeholder="Phone number, username, or email"
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none     bg-white"
               {...register("userEmail", { required: "Email is required" })}
             />
             {errors.userEmail && (
@@ -70,7 +70,7 @@ export default function Login() {
               type="password"
               id="password"
               placeholder="Password"
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 focus:outline-none     bg-white"
               {...register("password", { required: "Password is required" })}
             />
             {errors.password && (
