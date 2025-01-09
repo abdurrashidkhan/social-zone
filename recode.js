@@ -322,9 +322,9 @@ export default function MainContent() {
     try {
       const response = await countReact(id, email);
       if (response.success) {
-        console.log("Post liked successfully:", response);
+        // console.log("Post liked successfully:", response);
       } else {
-        console.log("Failed to like the post:", response.message);
+        // console.log("Failed to like the post:", response.message);
       }
     } catch (error) {
       console.error("Error in reactCounter:", error);

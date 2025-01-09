@@ -41,7 +41,7 @@ export default function ProfilePage() {
   const [allContent, setAllContent] = useState([]);
   const [userInfo, setUserInfo] = useState({});
   const [isLoading, setLoading] = useState(false);
-  console.log(userInfo)
+  // console.log(userInfo)
   const contentLoad = async (email) => {
     try {
       setLoading(true);

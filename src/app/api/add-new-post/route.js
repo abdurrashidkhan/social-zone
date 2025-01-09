@@ -35,7 +35,7 @@ export async function POST(request) {
       reactEmail: validatedReactEmail,  // Use the validated array
     };
 
-    console.log("Post data: ", data);  // Debugging: log the data being sent to MongoDB
+    // console.log("Post data: ", data);  // Debugging: log the data being sent to MongoDB
 
     // Connect to MongoDB
     await connectMongodb();

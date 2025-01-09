@@ -6,7 +6,7 @@ export async function GET(request, { params }) {
 
   await connectMongodb();
   const allPost = await post.find().catch();
-  console.log(allPost)
+  // console.log(allPost)
   return NextResponse.json({ allPost });
 
 }

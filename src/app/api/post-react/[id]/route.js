@@ -7,7 +7,7 @@ export async function PUT(request, { params }) {
   try {
     // Get the email value from the request body
     const { email } = await request.json();
-    console.log(email)
+    // console.log(email)
     // Validate the email value
     if (!email || typeof email !== "string") {
       return new Response("Invalid email value", { status: 400 });
