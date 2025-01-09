@@ -11,7 +11,7 @@ export default async function insertUser(data) {
   if (res.ok) {
     // router.push('/')
     // console.log(result)
-    console.log("add insert success");
+    // console.log("add insert success");
   }
   // else if(e){
   //   alert('please try agin')

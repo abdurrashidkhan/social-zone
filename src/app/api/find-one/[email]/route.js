@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
   const { email } = params
-  console.log(email)
+  // console.log(email)
   await connectMongodb();
   const allPost = await post.findOne({ email: email }).catch();
-  console.log(allPost)
+  // console.log(allPost)
   return NextResponse.json({ allPost });
 }

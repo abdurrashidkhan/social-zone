@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 export default async function insertProfilePicture(email, insertData, setIsLoading, reset) {
-  console.log(email);
+  // console.log(email);
 
   try {
     // Send PUT request to update the user profile picture
@@ -24,7 +24,7 @@ export default async function insertProfilePicture(email, insertData, setIsLoadi
     // Check if the response body is empty
     if (responseJson) {
       const parsedData = JSON.parse(responseJson); // Parse it into JSON if there's data
-      console.log(parsedData); // Optionally log the parsed response
+      // console.log(parsedData); // Optionally log the parsed response
     }
 
     // Hide the loading state and reset the form

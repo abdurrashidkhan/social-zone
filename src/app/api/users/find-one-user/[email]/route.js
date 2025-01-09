@@ -7,7 +7,7 @@ export async function GET(request, { params }) {
     // Access the email from dynamic route params
     const { email } = params;
 
-    console.log("Email received:", email);
+    // console.log("Email received:", email);
 
     // Validate the email parameter
     if (!email) {

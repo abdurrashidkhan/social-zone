@@ -42,7 +42,7 @@ export default function CollegeAdmissionsForm() {
         emergencyPhone: data?.emergencyPhone,
         otherLanguages: data?.otherLanguages, // "Yes" or "No"otherLanguages,
       };
-      console.log(insertData);
+      // console.log(insertData);
       // console.log(insertData)
       // Handle form submission logic here (e.g., save to database)
 

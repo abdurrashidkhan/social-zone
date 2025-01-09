@@ -53,24 +53,24 @@ export default function MainContent() {
 
       if (response.success) {
         if (response.alreadyReacted) {
-          Swal.fire({
-            title: "You already liked this post!",
-            icon: "info",
-          });
+          // Swal.fire({
+          //   title: "You already liked this post!",
+          //   icon: "info",
+          // });
         } else {
-          Swal.fire({
-            title: "Post liked successfully!",
-            icon: "success",
-          });
+          // Swal.fire({
+          //   title: "Post liked successfully!",
+          //   icon: "success",
+          // });
           // Reload posts to update the react count
           contentLoad(user.email);
         }
       } else {
-        Swal.fire({
-          title: "Failed to like the post",
-          text: response.message,
-          icon: "error",
-        });
+        // Swal.fire({
+        //   title: "Failed to like the post",
+        //   text: response.message,
+        //   icon: "error",
+        // });
       }
     } catch (error) {
       console.error("Error in reactCounter:", error);
@@ -197,7 +197,7 @@ export default function MainContent() {
                 <a>Settings</a>
               </li>
               <li>
-                <a>Logout</a>
+                <a onClick={() => userLogOut()}>Logout</a>
               </li>
             </ul>
           </div>

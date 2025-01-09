@@ -48,7 +48,7 @@ export default function CreateCollegeForm() {
   // data load
   // const [allContent, setAllContent] = useState([]);
   const [userInfo, setUserInfo] = useState({});
-  console.log(userInfo)
+  // console.log(userInfo)
   const contentLoad = async (email) => {
     try {
       setIsLoading(true);
