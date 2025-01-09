@@ -138,7 +138,7 @@ export default function CreateCollegeForm() {
           react: 0,
           reactEmail: [
             {
-              email: user?.email,  // Use the actual user's email here
+              email: 'no email',  // Use the actual user's email here
               timestamp: new Date(),  // Timestamp of when the user reacted
             },
           ],
@@ -224,7 +224,7 @@ export default function CreateCollegeForm() {
                     id="file"
                     type="file"
                     accept="image/*,video/*"
-                    className="hidden"
+                    className="hidden "
                     {...register("file", {
                       onChange: onFileChange,
                       required: "Please select a file",
@@ -262,7 +262,7 @@ export default function CreateCollegeForm() {
                   />
                 ) : (
                   <div className="text-center">
-                    <FiUser className="text-[5rem] h-auto mx-auto" />
+                    <FiUser className="text-[30px] h-auto mx-auto" />
                   </div>
                 )}
               </div>

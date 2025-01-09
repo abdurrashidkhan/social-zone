@@ -117,7 +117,7 @@ export default function SinUp() {
                 type="text"
                 {...register("userName", { required: "Name is required" })}
                 placeholder="Full Name"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
               />
               {errors.userName && <p className="text-red-500 text-sm">{errors.userName.message}</p>}
 
@@ -125,7 +125,7 @@ export default function SinUp() {
                 type="number"
                 {...register("userNumber", { required: "Mobile Number is required" })}
                 placeholder="Mobile Number"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
               />
               {errors.userNumber && <p className="text-red-500 text-sm">{errors.userNumber.message}</p>}
 
@@ -133,7 +133,7 @@ export default function SinUp() {
                 type="email"
                 {...register("userEmail", { required: "Email is required" })}
                 placeholder="Email address"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
               />
               {errors.userEmail && <p className="text-red-500 text-sm">{errors.userEmail.message}</p>}
 
@@ -141,7 +141,7 @@ export default function SinUp() {
                 type="password"
                 {...register("password", { required: "Password is required" })}
                 placeholder="Password"
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
               />
               {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
 
