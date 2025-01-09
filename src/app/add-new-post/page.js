@@ -28,7 +28,7 @@ const ProfileAvatar = ({ src, alt, size = 30 }) => (
       />
     ) : (
       <div className="text-[30px] text-center object-center">
-        <FiUser className="text-[30px] text-center object-center" />
+        <FiUser className="text-[30px] text-center object-center p-2" />
       </div>
     )}
   </div>
