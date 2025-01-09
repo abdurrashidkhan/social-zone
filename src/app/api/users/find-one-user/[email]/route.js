@@ -21,9 +21,9 @@ export async function GET(request, { params }) {
     await connectMongodb();
 
     // Find the user by email
-    const FindUser = await users.findOne({ email: email }).exec();
+    const allUserInfo = await users.findOne({ email: email }).exec();
 
-    if (!FindUser) {
+    if (!allUserInfo) {
       return NextResponse.json(
         { error: "User not found" },
         { status: 404 }
@@ -31,7 +31,7 @@ export async function GET(request, { params }) {
     }
 
     // Return the found user
-    return NextResponse.json(FindUser);
+    return NextResponse.json({ allUserInfo });
   } catch (error) {
     console.error("Server error:", error);
     return NextResponse.json(
