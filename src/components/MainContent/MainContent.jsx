@@ -150,22 +150,56 @@ export default function MainContent() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <nav className="flex items-center justify-between px-4 py-2 border-b bg-stext-slate-800 shadow-sm">
-        <div className="text-2xl font-bold text-gray-900">Instagram</div>
-        <div className="flex items-center space-x-4">
-          <input
-            type="text"
-            placeholder="Search"
-            className="bg-gray-200 rounded-lg px-4 py-1 text-sm focus:outline-none focus:ring focus:ring-blue-300"
-          />
-          <div className="flex space-x-2">
-            <IoMdNotificationsOutline className="text-[25px] text-center" />
-            <Link href={"/profile"}>
-              <ProfileAvatar
-                src={userDetails[user?.email]?.photoURL}
-                alt="User Avatar"
-              />
-            </Link>
+      {/* Top Navigation */}
+      <nav className="navbar bg-gray-100 border border-b shadow-2xl ">
+        <div className="flex-1">
+          <Link href={"/"} className="font-semibold  text-xl">
+            Social Zone
+          </Link>
+        </div>
+        <div className="flex-none gap-2">
+          <div className="form-control">
+            <input
+              type="text"
+              placeholder="Search"
+              className="input border   focus:outline-none w-24 md:w-auto bg-white"
+            />
+          </div>
+          <div className="form-control">
+            <div className="border rounded-full p-2 hover:bg-gray-300 ease-in-out duration-300">
+              <IoMdNotificationsOutline className="text-[25px] text-gray-800" />
+            </div>
+          </div>
+          <div className="dropdown dropdown-end ">
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn btn-ghost btn-circle avatar"
+            >
+              <div className="w-10 rounded-full">
+                <ProfileAvatar
+                  src={userDetails[user?.email]?.photoURL}
+                  alt="User Avatar"
+                />
+              </div>
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content  rounded z-[1] mt-3 w-52 p-2 shadow-2xl bg-gray-100"
+            >
+              <li>
+                <Link href={"/profile"} className="justify-between">
+                  Profile
+                  <span className="badge">New</span>
+                </Link>
+              </li>
+              <li>
+                <a>Settings</a>
+              </li>
+              <li>
+                <a>Logout</a>
+              </li>
+            </ul>
           </div>
         </div>
       </nav>
