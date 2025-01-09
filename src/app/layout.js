@@ -17,7 +17,6 @@ const tiroBangla = Hind_Siliguri({
 
 
 export default function RootLayout({ children }) {
-  const checkingUsers = CheckingUser();
   return (
     <html lang="en" suppressHydrationWarning>
       <body

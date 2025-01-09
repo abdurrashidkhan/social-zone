@@ -45,8 +45,8 @@ export default function Login() {
     <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 text-black dark:text-white">
       {/* Main Container */}
       <div className="bg-white dark:bg-gray-800 border border-gray-300 p-6 w-full max-w-sm rounded-md shadow-lg">
-        {/* Instagram Logo */}
-        <h1 className="text-center text-3xl font-logo mb-6">Instagram</h1>
+        {/* Social Zone Logo */}
+        <h1 className="text-center text-3xl font-logo mb-6">Social Zone</h1>
 
         {/* Login Form */}
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>

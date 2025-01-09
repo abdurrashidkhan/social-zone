@@ -87,8 +87,8 @@ export default function SinUp() {
         <div className="flex justify-center items-center  min-h-screen">
           {/* Main Container */}
           <div className="bg-white border border-gray-300 p-6 w-full max-w-sm rounded-md shadow-sm">
-            {/* Instagram Logo */}
-            <h1 className="text-center text-3xl font-logo mb-4">Instagram</h1>
+            {/* Social Zone Logo */}
+            <h1 className="text-center text-3xl font-logo mb-4">Social Zone</h1>
 
             {/* Subtitle */}
             <p className="text-center text-gray-500 text-sm mb-4">
@@ -157,7 +157,7 @@ export default function SinUp() {
             <div className="">
               <p className="text-xs text-gray-500 text-center mt-4">
                 People who use our service may have uploaded your contact information
-                to Instagram. <a href="#" className="text-blue-500 hover:underline">Learn More</a>
+                to Social Zone. <a href="#" className="text-blue-500 hover:underline">Learn More</a>
               </p>
               <p className="text-xs text-gray-500 text-center mt-2">
                 By signing up, you agree to our{" "}
