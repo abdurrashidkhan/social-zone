@@ -1,8 +1,66 @@
-import React, { useState } from "react";
+"use client";
+import { auth } from "@/app/firebase.init";
+import Loading from "@/app/loading";
+import findOneUser from "@/database/find/allUsers/findOneUser";
+import getAllComments from "@/database/find/comments";
+import commentsInsert from "@/database/insert/commentsInsert";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { useForm } from "react-hook-form";
+import { FiUser } from "react-icons/fi";
 import "./style.css";
 
-const CommentsComponent = () => {
+// Profile Avatar component
+const ProfileAvatar = ({ src, alt }) => (
+  <div className="rounded-full border bg-[#ebe7e7] ease-in-out duration-500">
+    {src ? (
+      <Image
+        alt={alt}
+        src={src}
+        width={500}
+        height={500}
+        className="object-cover w-10 h-10 rounded-full object-center"
+      />
+    ) : (
+      <div className="text-[30px] text-center p-2">
+        <FiUser />
+      </div>
+    )}
+  </div>
+);
+
+const CommentsComponent = ({ post }) => {
+  const [IsLoading, setIsLoading] = useState(false);
+  const [user, loading, error] = useAuthState(auth);
+  const [userInfo, setUserInfo] = useState({});
+  const [comments, setComments] = useState([]);
+  const timeAgo = "4 days ago"; // Placeholder, replace with real calculation if needed
+
+  useEffect(() => {
+    const contentLoad = async () => {
+      try {
+        if (user?.email) {
+          const { allUserInfo } = await findOneUser(user.email);
+          setUserInfo(allUserInfo || {});
+
+          // Fetch comments for the current post
+          const { comments, message } = await getAllComments(post?._id);
+          if (comments.length > 0) {
+            setComments(comments); // Set fetched comments
+          } else {
+            console.warn(message);
+            setComments([]); // Set empty array if no comments
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setComments([]); // Fallback to empty array on error
+      }
+    };
+    contentLoad();
+  }, [user]);
+
   const {
     register,
     handleSubmit,
@@ -10,106 +68,92 @@ const CommentsComponent = () => {
     formState: { errors },
     reset,
   } = useForm();
-  const [comments, setComments] = useState([
-    {
-      name: "Meher",
-      comment:
-        "Facebook, Google, Amazon, Netflix, Tesla er moto boro company te job korte gele ki CSE kora lagbe?",
-    },
-    {
-      name: "Arif",
-      comment:
-        "CSE na korleo job kora jay. Skill e ashol bishoy, na sudhu degree.",
-    },
-  ]);
 
-  const captionValue = watch("caption", "");
+  const captionValue = watch("comment", "");
 
-  const onSubmit = (data) => {
-    setComments([{ name: "Anonymous", comment: data.caption }, ...comments]);
-    reset(); // Clear the form after submission
+  const onSubmit = async (data) => {
+    const comment = {
+      postId: post?._id,
+      commentEmail: user?.email,
+      comment: data?.comment,
+      commentDate: new Date(),
+      displayName: user?.displayName,
+    };
+
+    try {
+      await commentsInsert(comment, setIsLoading, reset);
+      setComments((prev) => [...prev, comment]); // Add new comment locally
+      reset();
+    } catch (err) {
+      console.error("Error inserting comment:", err);
+    }
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    console.error(error);
+    return <p>Error loading user data</p>;
+  }
+
   return (
-    <div
-      className="container mx-auto px-2 z-[999] shadow-2xl"
-      id="comments_content_center"
-    >
-      <div className="w-full bg-white shadow-2xl rounded">
-        <div className="flex w-full h-full">
-          {/* Main Video and Description */}
-          <main className="flex flex-col sm:flex-row items-center px-6 py-6 bg-white shadow-2xl">
-            {/* Video Section */}
-            <div className="w-[100%] p-6 rounded-lg">
-              <div className="flex items-center justify-between">
-                <h1 className="text-lg font-bold">Career Cracker</h1>
-                <span className="text-sm text-gray-400">4 days ago</span>
+    <>
+      <aside className="w-full sm:w-[40%] h-auto bg-[#fff] text-[#000] overflow-y-auto">
+        <h2 className="text-lg font-bold">Comments</h2>
+        {Array.isArray(comments) && comments.length > 0 ? (
+          comments.map((comment, index) => (
+            <div
+              key={index}
+              className="flex items-start space-x-4 py-2 border-b last:border-none"
+            >
+              <div className="h-10 w-10 bg-gray-600 rounded-full"></div>
+              <div>
+                <p className="text-sm font-bold">
+                  {comment?.displayName || "Anonymous"}
+                </p>
+                <p className="text-sm">{comment?.comment}</p>
               </div>
-              <div className="mt-4 w-full aspect-video rounded-lg flex items-center justify-center bg-gray-200">
-                <p className="text-gray-400">Video Placeholder</p>
-              </div>
-              <p className="mt-4 text-sm text-gray-500">
-                CSE-এ পড়াশোনা করা অনেকেই স্বপ্ন দেখে, তারা একদিন Facebook,
-                Google, Amazon, Netflix, Tesla-এর মতো বড় কোম্পানিতে কাজ করবে।
-              </p>
             </div>
+          ))
+        ) : (
+          <p>No Comments Found</p>
+        )}
 
-            {/* Comments Section */}
-            <aside className="w-full sm:w-[40%] h-auto bg-[#fff] text-[#000] overflow-y-auto">
-              <h2 className="text-lg font-bold">Comments</h2>
-              {comments.map((comment, index) => (
-                <div
-                  key={index}
-                  className="flex items-start space-x-4 py-2 border-b last:border-none"
-                >
-                  <div className="h-10 w-10 bg-gray-600 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-bold">{comment.name}</p>
-                    <p className="text-sm">{comment.comment}</p>
-                  </div>
-                </div>
-              ))}
-
-              {/* Add New Comment */}
-              <div className="mt-4">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <textarea
-                    {...register("caption", {
-                      required: "Caption is required",
-                      maxLength: {
-                        value: 2200,
-                        message: "Caption must be less than 2200 characters",
-                      },
-                    })}
-                    name="caption"
-                    id="caption"
-                    className="mt-4 w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    placeholder="Write a caption..."
-                    rows="4"
-                    aria-label="Write your comment"
-                  ></textarea>
-                  {errors.caption && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.caption.message}
-                    </p>
-                  )}
-
-                  <div className="text-sm text-gray-500 text-right mt-1">
-                    {captionValue.length}/2200
-                  </div>
-                  <button
-                    type="submit"
-                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-                  >
-                    Post Comment
-                  </button>
-                </form>
-              </div>
-            </aside>
-          </main>
+        {/* Add New Comment */}
+        <div className="mt-4">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <textarea
+              {...register("comment", {
+                required: "Comment is required",
+                maxLength: {
+                  value: 200,
+                  message: "Comment must be less than 200 characters",
+                },
+              })}
+              name="comment"
+              id="comment"
+              className="mt-4 w-full border rounded p-2 focus:outline-none px-1 bg-white"
+              placeholder="Write a comment..."
+              rows="4"
+              aria-label="Write your comment"
+            ></textarea>
+            {errors.comment && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.comment.message}
+              </p>
+            )}
+            <button
+              type="submit"
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+            >
+              Post Comment
+            </button>
+          </form>
         </div>
-      </div>
-    </div>
+      </aside>
+    </>
   );
 };
 

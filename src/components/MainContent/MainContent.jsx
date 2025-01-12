@@ -212,7 +212,7 @@ export default function MainContent() {
         </aside>
         <main className="">
           <div className="flex-grow sm:p-4">
-            <div className="bg-stext-slate-800 rounded-lg shadow-sm p-4">
+            <div className="text-slate-800 rounded-lg shadow-sm p-4">
               {allContent.map((post) => {
                 const userData = userDetails[post.email];
                 const userName = userData?.displayName || "Anonymous";
