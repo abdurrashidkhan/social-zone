@@ -17,6 +17,7 @@ import { GoHeart, GoHeartFill } from "react-icons/go";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoBookmarksOutline } from "react-icons/io5";
 import Swal from "sweetalert2";
+import PostComments from "../postComments/postComments";
 
 // Profile Avatar component
 const ProfileAvatar = ({ src, alt }) => (
@@ -41,10 +42,17 @@ export default function MainContent() {
   const [user, loading, error] = useAuthState(auth);
   const [signOut, outLoading, outError] = useSignOut(auth);
   const [IsLoading, setIsLoading] = useState(false);
-
-  // Data states
   const [allContent, setAllContent] = useState([]);
   const [userDetails, setUserDetails] = useState({});
+
+  // Comments popup
+  const [isComment, setIsComment] = useState(false); // Track if popup is open
+  const [selectedPost, setSelectedPost] = useState({}); // Track the selected post
+
+  const commentsPop = async (post) => {
+    setIsComment(true); // Show the comments popup
+    setSelectedPost(post); // Set the selected post
+  };
 
   // Function to fetch react count
   const reactCounter = async (id, email) => {
@@ -52,25 +60,13 @@ export default function MainContent() {
       const response = await countReact(id, email);
 
       if (response.success) {
-        if (response.alreadyReacted) {
-          // Swal.fire({
-          //   title: "You already liked this post!",
-          //   icon: "info",
-          // });
-        } else {
-          // Swal.fire({
-          //   title: "Post liked successfully!",
-          //   icon: "success",
-          // });
-          // Reload posts to update the react count
-          contentLoad(user.email);
-        }
+        contentLoad(user.email);
       } else {
-        // Swal.fire({
-        //   title: "Failed to like the post",
-        //   text: response.message,
-        //   icon: "error",
-        // });
+        Swal.fire({
+          title: "Failed to like the post",
+          text: response.message,
+          icon: "error",
+        });
       }
     } catch (error) {
       console.error("Error in reactCounter:", error);
@@ -176,7 +172,7 @@ export default function MainContent() {
               role="button"
               className="btn btn-ghost btn-circle avatar"
             >
-              <div className="w-10 rounded-full">
+              <div className="mx-auto rounded-full">
                 <ProfileAvatar
                   src={userDetails[user?.email]?.photoURL}
                   alt="User Avatar"
@@ -206,6 +202,7 @@ export default function MainContent() {
 
       <div className="flex">
         {/* left slider */}
+
         <aside className="hidden md:block w-1/5 border-r p-4">
           <ul className="space-y-2">
             <li className="text-lg font-medium">Home</li>
@@ -213,81 +210,87 @@ export default function MainContent() {
             <li className="text-gray-700">Messages</li>
           </ul>
         </aside>
-        <main className="flex-grow sm:p-4">
-          <div className="bg-stext-slate-800 rounded-lg shadow-sm p-4">
-            {allContent.map((post) => {
-              const userData = userDetails[post.email];
-              const userName = userData?.displayName || "Anonymous";
-              const userPhoto = userData?.photoURL;
+        <main className="">
+          <div className="flex-grow sm:p-4">
+            <div className="text-slate-800 rounded-lg shadow-sm p-4">
+              {allContent.map((post) => {
+                const userData = userDetails[post.email];
+                const userName = userData?.displayName || "Anonymous";
+                const userPhoto = userData?.photoURL;
 
-              const postDate = post.date ? new Date(post.date) : new Date();
-              const timeAgo = formatDistanceToNow(postDate, {
-                addSuffix: true,
-              });
+                const postDate = post.date ? new Date(post.date) : new Date();
+                const timeAgo = formatDistanceToNow(postDate, {
+                  addSuffix: true,
+                });
 
-              return (
-                <div
-                  key={post?._id}
-                  className="mt-4 w-full sm:w-[70%] mx-auto bg-[#fff] rounded-lg overflow-hidden shadow-2xl"
-                >
-                  <div className="flex items-center px-4 py-2 border-b border-gray-200">
-                    <ProfileAvatar src={userPhoto} alt={userName} />
-                    <div className="ml-3">
-                      <p className="text-slate-800 font-medium capitalize">
-                        {userName}
-                      </p>
-                      <p className="text-gray-400 text-sm">{timeAgo}</p>
-                    </div>
-                  </div>
-
-                  <div className="relative w-full h-[500px]">
-                    <Image
-                      src={post?.image || "/default.jpg"}
-                      alt="Post Image"
-                      fill
-                      className="object-contain w-full h-auto rounded"
-                    />
-                  </div>
-
-                  <div className="px-4 py-3">
-                    <div className="text-slate-800">
-                      <span className="font-bold capitalize">{userName}</span>{" "}
-                      {post?.caption}
-                    </div>
-                    <p className="text-gray-500 text-sm mt-1">
-                      {post?.react} likes
-                    </p>
-
-                    <div className="flex justify-between items-center mt-3">
-                      <div className="flex gap-4 items-center">
-                        <button
-                          disabled={post.hasReacted}
-                          onClick={() =>
-                            !post.hasReacted &&
-                            reactCounter(post?._id, user?.email)
-                          }
-                        >
-                          {post.hasReacted ? (
-                            <GoHeartFill className="text-3xl text-red-700" />
-                          ) : (
-                            <GoHeart className="text-3xl text-slate-800" />
-                          )}
-                        </button>
-                        <button className="text-slate-800 text-3xl">
-                          <FaComment />
-                        </button>
-                        <button className="text-slate-900 text-3xl">
-                          <CiShare1 />
-                        </button>
+                return (
+                  <div
+                    key={post?._id}
+                    className="mt-4 w-full sm:w-[70%] mx-auto bg-[#fff] rounded-lg overflow-hidden shadow-2xl relative"
+                  >
+                    <div className="flex items-center px-4 py-2 border-b border-gray-200">
+                      <ProfileAvatar src={userPhoto} alt={userName} />
+                      <div className="ml-3">
+                        <p className="text-slate-800 font-medium capitalize">
+                          {userName}
+                        </p>
+                        <p className="text-gray-400 text-sm">{timeAgo}</p>
                       </div>
-                      <span className="">
-                        <IoBookmarksOutline className="text-slate-900 text-3xl" />
-                      </span>
                     </div>
+                    <div className="relative w-full h-[500px]">
+                      <Image
+                        src={post?.image || "/default.jpg"}
+                        alt="Post Image"
+                        fill
+                        className="object-contain w-full h-auto rounded"
+                      />
+                    </div>
+                    <div className="px-4 py-3">
+                      <div className="text-slate-800">
+                        <span className="font-bold capitalize">{userName}</span>{" "}
+                        {post?.caption}
+                      </div>
+                      <p className="text-gray-500 text-sm mt-1">
+                        {post?.react} likes
+                      </p>
+
+                      <div className="flex justify-between items-center mt-3">
+                        <div className="flex gap-4 items-center">
+                          <button
+                            disabled={post.hasReacted}
+                            onClick={() =>
+                              !post.hasReacted &&
+                              reactCounter(post?._id, user?.email)
+                            }
+                          >
+                            {post.hasReacted ? (
+                              <GoHeartFill className="text-3xl text-red-700" />
+                            ) : (
+                              <GoHeart className="text-3xl text-slate-800" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => commentsPop(post)} // Updated here
+                            className="text-slate-800 text-3xl"
+                          >
+                            <FaComment />
+                          </button>
+                          <button className="text-slate-900 text-3xl">
+                            <CiShare1 />
+                          </button>
+                        </div>
+                        <span className="">
+                          <IoBookmarksOutline className="text-slate-900 text-3xl" />
+                        </span>
+                      </div>
+                    </div>
+                    {isComment && selectedPost._id === post._id && (
+                      <PostComments post={post} />
+                    )}
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </main>
         {/* Right Sidebar */}
