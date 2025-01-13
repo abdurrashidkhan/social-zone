@@ -106,9 +106,12 @@ const CommentsComponent = ({ post }) => {
 
   return (
     isComment && (
-      <div className="z-[999] w-[100vw] h-[100vh] bg-[#9b9b9b8c] fixed top-0 left-0 overflow-y-scroll">
-        <div id="comments_content_center" className="overflow-y-scroll">
-          <div className="container mx-auto px-2 shadow-2xl rounded relative">
+      <div className="z-[999] w-[100vw] h-[100vh] bg-[#9b9b9b8c] fixed top-0 left-0 ">
+        <div
+          id="comments_content_center"
+          className="max-h-[90vh] overflow-y-auto"
+        >
+          <div className="container mx-auto px-2 shadow-2xl rounded relative max-h-[80vh] overflow-y-auto">
             {/* close comment aria */}
             <div className="text-center p-2 text-xl absolute top-0 right-4">
               <button
@@ -121,7 +124,7 @@ const CommentsComponent = ({ post }) => {
             <div className="w-full bg-white shadow-2xl rounded">
               <div className=" w-full h-full">
                 {/* Main Post Section */}
-                <main className="flex flex-col sm:flex-row items-center px-6 py-6 bg-white shadow-2xl rounded">
+                <main className="flex flex-col sm:flex-row items-center px-6 py-6 bg-white shadow-2xl rounded overflow-y-auto">
                   <div className="w-[100%] p-6 rounded-lg">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center px-4 py-2 border-b border-gray-200">
