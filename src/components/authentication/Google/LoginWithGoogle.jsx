@@ -30,10 +30,13 @@ export default function LoginWithGoogle() {
     errorElement = <p className="text-danger">Error: {error?.message}</p>;
   }
   return (
-    <div>
-      <button className="mt-2" onClick={() => googleLogin()}>
+    <div className="w-full bg-slate-200 text-white py-2 rounded-md font-medium mb-4 hover:bg-slate-300 transition-all text-center flex items-start justify-center gap-5">
+      <button
+        className="w-full h-auto mt-2 flex items-center justify-center"
+        onClick={() => googleLogin()}
+      >
         <Image
-          className="mx-auto w-[30px] h-auto"
+          className="w-[30px] h-auto"
           loading="lazy"
           src={googleLogo}
           alt="Loading...."

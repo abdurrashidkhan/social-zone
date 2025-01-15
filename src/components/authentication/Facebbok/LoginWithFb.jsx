@@ -17,6 +17,7 @@ export default function LoginWithFb() {
     photoURL: user?.user?.photoURL,
     accessToken: user?.user?.accessToken,
   };
+  console.log(userInfo);
   if (user) {
     userInfoInsert(userInfo);
   }

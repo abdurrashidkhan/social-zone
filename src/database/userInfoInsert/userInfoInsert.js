@@ -1,7 +1,7 @@
 // "use client";
 
 export default async function userInfoInsert(data) {
-  // console.log(data)
+  console.log(data)
   try {
     // C:\projects\digital-marketing-agency\src\app\api\merge-marketing\v1\users\insert-user\[email].js
     const res = await fetch(`/api/users/`, {

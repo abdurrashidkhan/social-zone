@@ -4,6 +4,7 @@ import Loading from "@/app/loading";
 import findOneUser from "@/database/find/allUsers/findOneUser";
 import getAllComments from "@/database/find/comments";
 import commentsInsert from "@/database/insert/commentsInsert";
+import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -38,13 +39,15 @@ const CommentsComponent = ({ post }) => {
   const [user, loading, error] = useAuthState(auth);
   const [userInfo, setUserInfo] = useState({});
   const [comments, setComments] = useState([]);
-  const timeAgo = "4 days ago"; // Placeholder for real-time calculation
+  const timeAgo = post?.date
+    ? formatDistanceToNow(new Date(post.date), { addSuffix: true })
+    : "Date not available"; // Placeholder for real-time calculation
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (user?.email) {
-          const { allUserInfo } = await findOneUser(user.email);
+          const { allUserInfo } = await findOneUser(post?.email);
           setUserInfo(allUserInfo || {});
           setIsLoading(true);
           // Fetch comments for the post

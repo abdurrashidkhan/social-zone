@@ -2,6 +2,7 @@
 import { auth } from "@/app/firebase.init";
 import Loading from "@/app/loading";
 import LoginWithFb from "@/components/authentication/Facebbok/LoginWithFb";
+import LoginWithGoogle from "@/components/authentication/Google/LoginWithGoogle";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import {
@@ -96,8 +97,8 @@ export default function Login() {
 
         {/* Login with Facebook */}
         <div className="text-[#0095F6] font-semibold hover:underline text-center flex items-start justify-center gap-5  ">
-          <FaFacebook className="text-2xl text-[#0095F6]" />
-          <LoginWithFb />
+          {/* <FaFacebook className="text-2xl text-[#0095F6]" /> */}
+          <LoginWithGoogle />
         </div>
         {/* <div className="text-center">
           <button

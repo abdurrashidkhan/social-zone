@@ -56,6 +56,7 @@ export default function MainContent() {
 
   // Function to fetch react count
   const reactCounter = async (id, email) => {
+    setIsLoading(true);
     try {
       const response = await countReact(id, email);
 
@@ -76,6 +77,7 @@ export default function MainContent() {
         icon: "error",
       });
     }
+    setIsLoading(false);
   };
 
   // Function to fetch posts and user details
